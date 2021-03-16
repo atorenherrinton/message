@@ -1,58 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+/** @format */
 
-function App() {
+import React from "react";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import Chat from "./components/chat/chat";
+import Contacts from "./components/contacts/contacts";
+import Grid from "@material-ui/core/Grid";
+import Header from "./components/header/header";
+
+const App = () => {
+  const theme = createMuiTheme({
+    palette: {
+      primary: {
+        light: "#42464D",
+        main: "#383C42",
+        dark: "#2F3237",
+        contrastText: "#fff",
+      },
+      secondary: {
+        light: "#3FA5F3",
+        main: "#279AF1",
+        dark: "#1993F0",
+        contrastText: "#fff",
+      },
+    },
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div>
+      <ThemeProvider theme={theme}>
+        <Header />
+        <Grid
+          container
+          direction="row"
+          justify="space-around"
+          style={{ marginTop: "1rem" }}
+        >
+          <Grid container xs={4} spacing={3}>
+            <Contacts />
+          </Grid>
+          <Grid container xs={8} spacing={3}>
+            <Chat />
+          </Grid>
+        </Grid>
+      </ThemeProvider>
     </div>
   );
-}
+};
 
 export default App;
