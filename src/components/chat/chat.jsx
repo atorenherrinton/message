@@ -1,39 +1,110 @@
 /** @format */
 
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Received from "../receieved/received";
-import Sent from "../sent/sent";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
+import SendIcon from "@material-ui/icons/Send";
+import IconButton from "@material-ui/core/IconButton";
+import { red } from "@material-ui/core/colors";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Message from "../message/message";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-    justifyContent: "left",
-    flexWrap: "wrap",
-    "& > *": {
-      margin: theme.spacing(0.5),
-    },
-    marginTop: "1.75rem",
-    marginLeft: "2rem",
+    minWidth: 300,
+    maxWidth: 600,
+    marginTop: "3rem",
+    marginBottom: "5rem",
   },
-  chip: {},
+  avatar: {
+    backgroundColor: red[500],
+  },
+  button: {
+    marginTop: "0.75rem",
+    width: "100%",
+  },
+  input: {
+    marginTop: "2rem",
+  },
+  textField: {
+    borderRadius: "1.25rem",
+    width: "100%",
+  },
 }));
 
 const Chat = () => {
   const classes = useStyles();
+  const [message, setMessage] = useState({
+    text: "",
+    isFriend: true,
+  });
+  const [messages, setMessages] = useState([]);
+
+  const handleChange = (event) => {
+    const { value, name } = event.target;
+    setMessage({ ...message, [name]: value });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (message.text.length > 0) {
+      setMessages([...messages, message]);
+      setMessage({ text: "", isFriend: !message.isFriend });
+    }
+  };
   return (
-    <div className={classes.root}>
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <Received label="Great to hear" />
-        <Sent label="I'll be in your neighborhood doing errands this weekend. Do you need anything from the store?" />
-      </Grid>
-    </div>
+    <Card className={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar aria-label="recipe" className={classes.avatar}>
+            S
+          </Avatar>
+        }
+        action={
+          <IconButton aria-label="settings">
+            <MoreVertIcon />
+          </IconButton>
+        }
+        title="Seth Toren-Herrinton"
+      />
+      <CardContent>
+        {messages.map((message, idx) => (
+          <Message key={idx} isFriend={message.isFriend} text={message.text} />
+        ))}
+        <div className={classes.input}>
+          <TextField
+            onChange={handleChange}
+            onKeyPress={(event) => {
+              if (event.key === "Enter") {
+                handleSubmit(event);
+              }
+            }}
+            name="text"
+            value={message.text}
+            id="outlined-basic"
+            label="Your Message"
+            multiline
+            variant="outlined"
+            size="small"
+            className={classes.textField}
+          />
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="secondary"
+            endIcon={<SendIcon />}
+            className={classes.button}
+          >
+            Send
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

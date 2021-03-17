@@ -13,13 +13,13 @@ const App = () => {
       primary: {
         light: "#42464D",
         main: "#383C42",
-        dark: "#2F3237",
+        dark: "#0B0A0A",
         contrastText: "#fff",
       },
       secondary: {
-        light: "#3FA5F3",
-        main: "#279AF1",
-        dark: "#1993F0",
+        light: "#1993F0",
+        main: "#0F89E6",
+        dark: "#0D7DD3",
         contrastText: "#fff",
       },
     },
@@ -33,12 +33,13 @@ const App = () => {
           container
           direction="row"
           justify="space-around"
-          style={{ marginTop: "1rem" }}
+          style={{ marginTop: "2rem" }}
+
         >
-          <Grid container xs={4} spacing={3}>
+          <Grid item xs={10} md={3}>
             <Contacts />
           </Grid>
-          <Grid container xs={8} spacing={3}>
+          <Grid item xs={10} md={8}>
             <Chat />
           </Grid>
         </Grid>
