@@ -7,6 +7,6 @@ import authenticateReducer from "../slices/authenticate";
 export default configureStore({
   reducer: {
     message: messageReducer,
-    authenticate:authenticateReducer,
+    authenticate: authenticateReducer,
   },
 });

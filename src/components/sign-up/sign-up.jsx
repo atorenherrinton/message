@@ -7,25 +7,24 @@ import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import FormControl from "@material-ui/core/FormControl";
-import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
-import PublicIcon from "@material-ui/icons/Public";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import translate from "../../assets/translate.svg";
 
 import firebase from "../../firebase/firebase";
 import {
+  setHasAccount,
   setEmail,
   setPassword,
   setWelcome,
   setLanguage,
+  setUser,
   selectLanguage,
   selectWelcome,
   selectEmail,
@@ -113,7 +112,7 @@ const SignUp = () => {
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user.uid);
+        dispatch(setUser(user.uid));
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -128,15 +127,16 @@ const SignUp = () => {
       .auth()
       .signInWithPopup(provider)
       .then((result) => {
-        const credential = result.credential;
+        // const credential = result.credential;
         // This gives you a Google Access Token. You can use it to access the Google API.
-        const token = credential.accessToken;
+        // const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
-        console.log(user.uid);
+        dispatch(setUser(user.uid));
       })
       .catch((error) => {
         const errorMessage = error.message;
+        console.log(errorMessage);
       });
   };
 
@@ -157,8 +157,8 @@ const SignUp = () => {
                   variant="body2"
                   gutterBottom
                 >
-                  Message translates your messages into the language your
-                  friends speak
+                  Message translates your words into the language your friends
+                  speak
                 </Typography>
 
                 <TextField
@@ -252,7 +252,13 @@ const SignUp = () => {
               </div>
             )}
 
-            <Button className={classes.alternateButton} color="primary">
+            <Button
+              onClick={() => {
+                dispatch(setHasAccount());
+              }}
+              className={classes.alternateButton}
+              color="primary"
+            >
               Already Have an account? Sign in instead
             </Button>
           </form>

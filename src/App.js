@@ -1,6 +1,8 @@
 /** @format */
 
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectUser } from "./slices/authenticate";
 import {
   createMuiTheme,
   makeStyles,
@@ -16,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const App = () => {
+  const user = useSelector(selectUser);
   const classes = useStyles();
-
   const theme = createMuiTheme({
     palette: {
       primary: {
@@ -38,7 +40,7 @@ const App = () => {
   return (
     <div className={classes.root}>
       <ThemeProvider theme={theme}>
-        <Authenticate />
+        {user ? <Main /> : <Authenticate />}
       </ThemeProvider>
     </div>
   );

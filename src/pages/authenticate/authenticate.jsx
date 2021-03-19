@@ -1,6 +1,8 @@
 /** @format */
 
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectHasAccount } from "../../slices/authenticate";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Header from "../../components/header/header";
@@ -14,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Authenticate = () => {
   const classes = useStyles();
+  const hasAccount = useSelector(selectHasAccount);
   return (
     <div>
       <Header />
@@ -29,7 +32,7 @@ const Authenticate = () => {
           <Background />
         </Grid>
         <Grid item xs={10} md={3}>
-          <SignUp />
+          {hasAccount ? <SignIn/>: <SignUp/>}
         </Grid>
         <Grid item xs={10} md={1} />
       </Grid>
