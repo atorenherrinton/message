@@ -1,13 +1,23 @@
 /** @format */
 
 import React from "react";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import Chat from "./components/chat/chat";
-import Contacts from "./components/contacts/contacts";
-import Grid from "@material-ui/core/Grid";
-import Header from "./components/header/header";
+import {
+  createMuiTheme,
+  makeStyles,
+  ThemeProvider,
+} from "@material-ui/core/styles";
+import Main from "../src/pages/main/main";
+import Authenticate from "./pages/authenticate/authenticate";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    overflowX: "hidden",
+  },
+}));
 
 const App = () => {
+  const classes = useStyles();
+
   const theme = createMuiTheme({
     palette: {
       primary: {
@@ -17,8 +27,8 @@ const App = () => {
         contrastText: "#fff",
       },
       secondary: {
-        light: "#1993F0",
-        main: "#0F89E6",
+        light: "#D7E9FF",
+        main: "#479AFF",
         dark: "#0D7DD3",
         contrastText: "#fff",
       },
@@ -26,23 +36,9 @@ const App = () => {
   });
 
   return (
-    <div>
+    <div className={classes.root}>
       <ThemeProvider theme={theme}>
-        <Header />
-        <Grid
-          container
-          direction="row"
-          justify="space-around"
-          style={{ marginTop: "2rem" }}
-
-        >
-          <Grid item xs={10} md={3}>
-            <Contacts />
-          </Grid>
-          <Grid item xs={10} md={8}>
-            <Chat />
-          </Grid>
-        </Grid>
+        <Authenticate />
       </ThemeProvider>
     </div>
   );

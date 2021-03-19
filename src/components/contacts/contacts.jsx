@@ -16,16 +16,15 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     maxWidth: "36ch",
-    marginTop: "1rem",
   },
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
   list: {
-    marginLeft: "-1rem",
     marginTop: "1rem",
   },
   fab: {
+    marginLeft: "1rem",
     textTransform: "capitalize",
     background: "linear-gradient(45deg, #ff2454 30%, #fb9f6f 90%)",
   },
