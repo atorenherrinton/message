@@ -10,6 +10,7 @@ export const authenticateSlice = createSlice({
     language: "",
     email: "",
     password: "",
+    error: "",
     user: "",
   },
   reducers: {
@@ -28,6 +29,9 @@ export const authenticateSlice = createSlice({
     setPassword: (state, action) => {
       state.password = action.payload;
     },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
     setUser: (state, action) => {
       state.user = action.payload;
     },
@@ -40,6 +44,7 @@ export const {
   setLanguage,
   setEmail,
   setPassword,
+  setError,
   setUser,
 } = authenticateSlice.actions;
 
@@ -51,6 +56,7 @@ export const selectHasAccount = (state) => state.authenticate.hasAccount;
 export const selectLanguage = (state) => state.authenticate.language;
 export const selectEmail = (state) => state.authenticate.email;
 export const selectPassword = (state) => state.authenticate.password;
+export const selectError = (state) => state.authenticate.error;
 export const selectUser = (state) => state.authenticate.user;
 
 export default authenticateSlice.reducer;

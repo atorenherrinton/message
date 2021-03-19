@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -21,14 +22,19 @@ import {
   setHasAccount,
   setEmail,
   setPassword,
+  setError,
   setUser,
   selectEmail,
+  selectError,
   selectPassword,
 } from "../../slices/authenticate";
 
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
+  },
+  alert: {
+    marginTop: "0.75rem",
   },
   appbar: {
     width: "100%",
@@ -59,7 +65,7 @@ const useStyles = makeStyles({
     textAlign: "left",
   },
   input: {
-    marginBottom: "1.5rem",
+    marginBottom: "1rem",
     width: "100%",
   },
   dropdown: {
@@ -72,6 +78,12 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
+  const error = useSelector(selectError);
+  if (error) {
+    setTimeout(() => {
+      dispatch(setError(""));
+    }, 3000);
+  }
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -85,28 +97,7 @@ const SignUp = () => {
         dispatch(setUser(user.uid));
       })
       .catch((error) => {
-        const errorMessage = error.message;
-        console.log(errorMessage);
-      });
-  };
-
-  const handleGoogleSignIn = (event) => {
-    event.preventDefault();
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then((result) => {
-        // const credential = result.credential;
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        dispatch(setUser(user.uid));
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        console.log(errorMessage);
+        dispatch(setError(error.message));
       });
   };
 
@@ -155,7 +146,13 @@ const SignUp = () => {
                   }
                   labelWidth={70}
                 />
+                {error ? (
+                  <Alert className={classes.alert} severity="warning">
+                    {error}
+                  </Alert>
+                ) : null}
               </FormControl>
+
               <Button
                 onClick={handleSubmit}
                 className={classes.button}
@@ -163,14 +160,6 @@ const SignUp = () => {
                 color="secondary"
               >
                 Sign In
-              </Button>
-              <Button
-                onClick={handleGoogleSignIn}
-                className={classes.button}
-                variant="contained"
-                color="primary"
-              >
-                Sign In With Google
               </Button>
             </div>
             <Button
