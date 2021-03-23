@@ -28,10 +28,10 @@ const Authenticate = () => {
         alignItems="flex-start"
         spacing={8}
       >
-        <Grid item xs={10} sm={8 } md={4}>
+        <Grid item xs={10} sm={8} md={4}>
           <Background />
         </Grid>
-        <Grid item xs={10} sm={8 } md={3}>
+        <Grid item xs={10} sm={8} md={3}>
           {hasAccount ? <SignIn /> : <SignUp />}
         </Grid>
         <Grid item xs={10} md={1} />

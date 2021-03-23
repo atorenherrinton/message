@@ -1,6 +1,11 @@
 /** @format */
 
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setAddingFriend,
+  selectIsAddingFriend,
+} from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Avatar from "@material-ui/core/Avatar";
@@ -14,6 +19,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginTop: "1.5rem",
     width: "100%",
     maxWidth: "36ch",
   },
@@ -32,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Contacts = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const isAddingFriend = useSelector(selectIsAddingFriend);
   return (
     <div className={classes.root}>
       <Grid
@@ -40,9 +48,18 @@ const Contacts = () => {
         justify="flex-start"
         alignItems="flex-start"
       >
-        <Fab color="secondary" className={classes.fab} variant="extended">
+        <Fab
+          onClick={() => {
+            if (!isAddingFriend) {
+              dispatch(setAddingFriend());
+            }
+          }}
+          color="secondary"
+          className={classes.fab}
+          variant="extended"
+        >
           <AddIcon className={classes.extendedIcon} />
-          New Message
+          Add Friend
         </Fab>
         <Hidden only={["xs", "sm"]}>
           <List className={classes.list}>

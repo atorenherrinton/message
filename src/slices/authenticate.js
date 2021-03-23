@@ -7,13 +7,17 @@ export const authenticateSlice = createSlice({
   initialState: {
     welcome: true,
     hasAccount: false,
+    name: "",
     language: "",
     email: "",
     password: "",
     error: "",
-    user: "",
+    user: false,
   },
   reducers: {
+    setName: (state, action) => {
+      state.name = action.payload;
+    },
     setWelcome: (state) => {
       state.welcome = !state.welcome;
     },
@@ -32,8 +36,8 @@ export const authenticateSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setUser: (state) => {
+      state.user = !state.user;
     },
   },
 });
@@ -42,6 +46,7 @@ export const {
   setWelcome,
   setHasAccount,
   setLanguage,
+  setName,
   setEmail,
   setPassword,
   setError,
@@ -54,6 +59,7 @@ export const {
 export const selectWelcome = (state) => state.authenticate.welcome;
 export const selectHasAccount = (state) => state.authenticate.hasAccount;
 export const selectLanguage = (state) => state.authenticate.language;
+export const selectName = (state) => state.authenticate.name;
 export const selectEmail = (state) => state.authenticate.email;
 export const selectPassword = (state) => state.authenticate.password;
 export const selectError = (state) => state.authenticate.error;

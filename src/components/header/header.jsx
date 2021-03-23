@@ -40,7 +40,7 @@ const Header = () => {
       .signOut()
       .then(() => {
         // Sign-out successful.
-        dispatch(setUser(""));
+        dispatch(setUser());
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -69,8 +69,7 @@ const Header = () => {
               </Typography>
             </Grid>
             <Grid item>
-            {user ? (
-              
+              {user ? (
                 <Button
                   onClick={handleSubmit}
                   className={classes.signOut}
@@ -79,14 +78,13 @@ const Header = () => {
                 >
                   Sign Out
                 </Button>
-              
-            ) : (
-              <Hidden only="xs">
-                <Typography className={classes.title}>
-                  Translate your message
-                </Typography>
-              </Hidden>
-            )}
+              ) : (
+                <Hidden only="xs">
+                  <Typography className={classes.title}>
+                    Translate your message
+                  </Typography>
+                </Hidden>
+              )}
             </Grid>
           </Grid>
         </Toolbar>

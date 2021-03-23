@@ -21,6 +21,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import firebase from "../../firebase/firebase";
 import {
   setHasAccount,
+  setName,
   setEmail,
   setPassword,
   setError,
@@ -30,6 +31,7 @@ import {
   selectError,
   selectLanguage,
   selectWelcome,
+  selectName,
   selectEmail,
   selectPassword,
 } from "../../slices/authenticate";
@@ -41,9 +43,7 @@ const useStyles = makeStyles({
   alert: {
     marginTop: "0.75rem",
   },
-  appbar: {
-    width: "100%",
-  },
+
   button: {
     marginBottom: "0.75rem",
     textTransform: "capitalize",
@@ -61,10 +61,7 @@ const useStyles = makeStyles({
     padding: "1rem 0.5rem 1rem 0.5rem",
     textAlign: "center",
   },
-  icon: {
-    marginTop: "0.5rem",
-    marginRight: "-0.75rem",
-  },
+
   intro: {
     marginBottom: "1.5rem",
     textAlign: "left",
@@ -82,6 +79,7 @@ const useStyles = makeStyles({
 const SignUp = () => {
   const dispatch = useDispatch();
   const language = useSelector(selectLanguage);
+  const name = useSelector(selectName);
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
   const error = useSelector(selectError);
@@ -118,28 +116,32 @@ const SignUp = () => {
     },
   ];
 
-  const addLanguage = (user) => {
+  const addUserToDatabase = () => {
     db.collection("users")
-      .doc(user)
-      .set({ language: language })
+      .doc(email)
+      .set({ name: name, language: language })
       .catch((error) => {
         console.error("Error adding document: ", error);
       });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const createUser = () => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        addLanguage(user.uid);
+        addUserToDatabase(user.uid);
         dispatch(setUser(user.uid));
       })
       .catch((error) => {
         dispatch(setError(error.message));
       });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    createUser(email, password, name, language);
   };
 
   return (
@@ -200,6 +202,15 @@ const SignUp = () => {
                     </MenuItem>
                   ))}
                 </TextField>
+                <TextField
+                  onChange={(event) => {
+                    dispatch(setName(event.target.value));
+                  }}
+                  className={classes.input}
+                  label="Name"
+                  name="name"
+                  variant="outlined"
+                />
                 <TextField
                   onChange={(event) => {
                     dispatch(setEmail(event.target.value));

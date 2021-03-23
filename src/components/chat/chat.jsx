@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 300,
     maxWidth: 600,
-    marginTop: "3rem",
+    marginTop: "2rem",
     marginBottom: "5rem",
   },
   avatar: {
@@ -26,10 +26,11 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginTop: "0.75rem",
+    textTransform: "capitalize",
     width: "100%",
   },
   input: {
-    marginTop: "2rem",
+    marginTop: "3rem",
   },
   textField: {
     borderRadius: "1.25rem",
@@ -97,7 +98,6 @@ const Chat = () => {
             onClick={handleSubmit}
             variant="contained"
             color="secondary"
-            endIcon={<SendIcon />}
             className={classes.button}
           >
             Send
