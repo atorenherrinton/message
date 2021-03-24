@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const App = () => {
-  const user = useSelector(selectUser);
   const classes = useStyles();
+  const user = useSelector(selectUser);
   const theme = createMuiTheme({
     palette: {
       primary: {
@@ -36,6 +36,8 @@ const App = () => {
       },
     },
   });
+
+
 
   return (
     <div className={classes.root}>

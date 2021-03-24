@@ -72,7 +72,7 @@ const AddFriend = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Result:", data.result);
+        console.log("send_friend_request:", data.result);
         setOtherEmail("");
       })
       .catch((error) => {

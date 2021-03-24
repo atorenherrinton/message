@@ -47,18 +47,35 @@ def send_friend_request():
         return 'user was not found'
 
 
+def get_friends():
+    email = request.json['email']
+    docs = db.collection(u'users').document(
+        email).collection(u'friends').stream()
+    result = [doc.to_dict() for doc in docs]
+    return result
+
+
+def get_friend_requests():
+    email = request.json['email']
+    docs = db.collection(u'users').document(
+        email).collection(u'friend-requests').stream()
+    result = [doc.to_dict() for doc in docs]
+    return result
+
+
 def accept_friend_request():
     my_email, other_email = request.json['my_email'], request.json['other_email']
     my_ref = db.collection(u'users').document(my_email)
     other_ref = db.collection(u'users').document(other_email)
     my_doc = my_ref.get()
+    other_doc = other_ref.get()
 
     if my_doc.exists:
         my_name = my_doc.to_dict()['name']
         my_language = my_doc.to_dict()['language']
 
-        other_name = my_doc.to_dict()['name']
-        other_language = my_doc.to_dict()['language']
+        other_name = other_doc.to_dict()['name']
+        other_language = other_doc.to_dict()['language']
 
         other_ref.collection(u'friends').document(my_email).set({
             u'name': my_name,
@@ -93,6 +110,8 @@ def delete_friend_request():
 
 firebase_actions = {
     "add_user_to_database": add_user_to_database,
+    "get_friends": get_friends,
+    "get_friend_requests": get_friend_requests,
     "send_friend_request": send_friend_request,
     "accept_friend_request": accept_friend_request,
     "delete_friend_request": delete_friend_request,

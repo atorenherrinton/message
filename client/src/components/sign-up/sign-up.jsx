@@ -116,15 +116,6 @@ const SignUp = () => {
     },
   ];
 
-  const addUserToDatabase = () => {
-    db.collection("users")
-      .doc(email)
-      .set({ name: name, language: language })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-      });
-  };
-
   const createUser = () => {
     firebase
       .auth()

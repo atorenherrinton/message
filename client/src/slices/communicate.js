@@ -11,7 +11,7 @@ export const communicateSlice = createSlice({
   },
   reducers: {
     loadFriendRequests: (state, action) => {
-      state.friendRequests = [...state.friendRequests, action.payload];
+      state.friendRequests = action.payload;
     },
     setAddingFriend: (state) => {
       state.isAddingFriend = !state.isAddingFriend;

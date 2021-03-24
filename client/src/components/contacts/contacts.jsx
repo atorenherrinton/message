@@ -1,7 +1,8 @@
 /** @format */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { selectEmail } from "../../slices/authenticate";
 import {
   setAddingFriend,
   selectIsAddingFriend,
@@ -39,7 +40,39 @@ const useStyles = makeStyles((theme) => ({
 const Contacts = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const email = useSelector(selectEmail);
   const isAddingFriend = useSelector(selectIsAddingFriend);
+  const [friends, setFriends] = useState([]);
+
+  const getFriends = () => {
+    const data = {
+      action: "get_friends",
+      email: email,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("get_friends:", data.result);
+        if (data.result) {
+          setFriends(data.result);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  useEffect(() => {
+    getFriends();
+  }, []);
+
   return (
     <div className={classes.root}>
       <Grid
@@ -63,46 +96,19 @@ const Contacts = () => {
         </Fab>
         <Hidden only={["xs", "sm"]}>
           <List className={classes.list}>
-            <ListItem alignItems="flex-start" button>
-              <ListItemAvatar>
-                <Avatar alt="Remy Sharp" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Brunch this weekend?"
-                secondary={
-                  <React.Fragment>
-                    {"I'll be in your neighborhood doing errands this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-            <ListItem alignItems="flex-start" button>
-              <ListItemAvatar>
-                <Avatar alt="Travis Howard" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Summer BBQ"
-                secondary={
-                  <React.Fragment>
-                    {"Wish I could come, but I'm out of town this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-
-            <ListItem alignItems="flex-start" button>
-              <ListItemAvatar>
-                <Avatar alt="Cindy Baker" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Sandra Adams"
-                secondary={
-                  <React.Fragment>
-                    {"Do you have Paris recommendations? Have you ever…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
+            {friends.map((friend, idx) => {
+              return (
+                <ListItem key={idx} alignItems="flex-start" button>
+                  <ListItemAvatar>
+                    <Avatar alt={friend.name} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={friend.name}
+                    secondary={<React.Fragment>{friend.email}</React.Fragment>}
+                  />
+                </ListItem>
+              );
+            })}
           </List>
         </Hidden>
       </Grid>

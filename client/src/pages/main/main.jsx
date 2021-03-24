@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setName, setLanguage, selectEmail } from "../../slices/authenticate";
 import {
+  loadFriendRequests,
   setInviteSent,
   selectIsAddingFriend,
   selectInviteSent,
@@ -26,8 +27,31 @@ const Main = () => {
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const inviteSent = useSelector(selectInviteSent);
 
-  console.log(inviteSent);
+  const getFriendRequests = () => {
+    const data = {
+      action: "get_friend_requests",
+      email: email,
+    };
 
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Result:", data.result);
+        if (data.result) {
+          dispatch(loadFriendRequests(data.result));
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  
   useEffect(() => {
     myRef
       .get()
@@ -43,6 +67,7 @@ const Main = () => {
       .catch((error) => {
         console.log("Error getting document:", error);
       });
+    getFriendRequests();
   }, []);
 
   return (

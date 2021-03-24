@@ -13,8 +13,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
-import firebase from "../../firebase/firebase";
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -39,23 +37,32 @@ const FriendRequests = () => {
   const classes = useStyles();
   const email = useSelector(selectEmail);
 
-  const [friendsList, setFriendsList] = useState([]);
-  const db = firebase.firestore();
+  const [friendRequests, setFriendRequests] = useState([]);
 
-  useEffect(() => {
-    const friendRequestsRef = db
-      .collection("users")
-      .doc(email)
-      .collection("friend-requests");
-    friendRequestsRef.get().then((querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        temp.push(doc.data());
+  const getFriendRequests = () => {
+    const data = {
+      action: "get_friend_requests",
+      email: email,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("get_friend_requests:", data.result);
+        if (data.result) {
+          setFriendRequests(data.result);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
       });
-      setFriendsList(temp);
-    });
-  }, []);
+  };
 
   const handleAddFriend = (friend) => {
     const data = {
@@ -73,11 +80,14 @@ const FriendRequests = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Result:", data.result);
+        console.log("accept_friend_request:", data.result);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+    setFriendRequests([
+      ...friendRequests.filter((friendRequest) => friendRequest !== friend),
+    ]);
   };
 
   const handleIgnoreFriend = (friend) => {
@@ -96,16 +106,23 @@ const FriendRequests = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Result:", data.result);
+        console.log("delete_friend_request:", data.result);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+    setFriendRequests([
+      ...friendRequests.filter((friendRequest) => friendRequest !== friend),
+    ]);
   };
+
+  useEffect(() => {
+    getFriendRequests();
+  }, []);
 
   return (
     <div>
-      {friendsList.length > 0 ? (
+      {friendRequests.length > 0 ? (
         <List className={classes.root}>
           {
             <ListSubheader
@@ -116,7 +133,7 @@ const FriendRequests = () => {
               Friend Requests
             </ListSubheader>
           }
-          {friendsList.map((friend, idx) => {
+          {friendRequests.map((friend, idx) => {
             const labelId = `checkbox-list-secondary-label-${friend.name}`;
             return (
               <div key={idx}>
