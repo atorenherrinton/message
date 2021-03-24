@@ -2,18 +2,20 @@
 
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Alert from "@material-ui/core/Avatar";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
+import FormControl from "@material-ui/core/FormControl";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import InputLabel from "@material-ui/core/InputLabel";
 import SendIcon from "@material-ui/icons/Send";
 import IconButton from "@material-ui/core/IconButton";
 import { red } from "@material-ui/core/colors";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Message from "../message/message";
-import TextField from "@material-ui/core/TextField";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,10 +33,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   input: {
-    marginTop: "3rem",
-  },
-  textField: {
-    borderRadius: "1.25rem",
+    marginTop: "2rem",
     width: "100%",
   },
 }));
@@ -46,13 +45,6 @@ const Chat = () => {
     isFriend: true,
   });
   const [messages, setMessages] = useState([]);
-  const inviteSent = useSelector(selectInviteSent);
-
-  if (inviteSent) {
-    setTimeout(() => {
-      dispatch(setInviteSent());
-    }, 2000);
-  }
 
   const handleChange = (event) => {
     const { value, name } = event.target;
@@ -68,9 +60,6 @@ const Chat = () => {
   };
   return (
     <div className={classes.root}>
-      {inviteSent ? (
-        <Alert style={{ marginTop: "1rem" }}>Your invite was sent!</Alert>
-      ) : null}
       <Card>
         <CardHeader
           avatar={
@@ -93,32 +82,35 @@ const Chat = () => {
               text={message.text}
             />
           ))}
-          <div className={classes.input}>
-            <TextField
+          <FormControl className={classes.input} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">
+              Message
+            </InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type="text"
+              name="text"
+              value={message.text}
               onChange={handleChange}
               onKeyPress={(event) => {
                 if (event.key === "Enter") {
                   handleSubmit(event);
                 }
               }}
-              name="text"
-              value={message.text}
-              id="outlined-basic"
-              label="Your Message"
-              multiline
-              variant="outlined"
-              size="small"
-              className={classes.textField}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleSubmit}
+                    edge="end"
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </InputAdornment>
+              }
+              labelWidth={67}
             />
-            <Button
-              onClick={handleSubmit}
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-            >
-              Send
-            </Button>
-          </div>
+          </FormControl>
         </CardContent>
       </Card>
     </div>

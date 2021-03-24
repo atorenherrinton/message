@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  selectEmail,
-} from "../../slices/authenticate";
+import { selectEmail } from "../../slices/authenticate";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";

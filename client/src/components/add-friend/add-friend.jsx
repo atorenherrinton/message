@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectEmail } from "../../slices/authenticate";
 import { setAddingFriend, setInviteSent } from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
-import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
@@ -75,12 +74,12 @@ const AddFriend = () => {
       .then((data) => {
         console.log("Result:", data.result);
         setOtherEmail("");
-        dispatch(setAddingFriend());
-        dispatch(setInviteSent());
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+    dispatch(setAddingFriend());
+    dispatch(setInviteSent());
   };
 
   return (

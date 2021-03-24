@@ -9,12 +9,12 @@ import {
   selectInviteSent,
 } from "../../slices/communicate";
 import AddFriend from "../../components/add-friend/add-friend";
-import Alert from "@material-ui/lab/Alert";
 import Chat from "../../components/chat/chat";
 import Contacts from "../../components/contacts/contacts";
 import Grid from "@material-ui/core/Grid";
 import Header from "../../components/header/header";
 import FriendRequests from "../../components/friend-requests/friend-requests";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import firebase from "../../firebase/firebase";
 
@@ -26,11 +26,7 @@ const Main = () => {
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const inviteSent = useSelector(selectInviteSent);
 
-  if (inviteSent) {
-    setTimeout(() => {
-      dispatch(setInviteSent());
-    }, 2000);
-  }
+  console.log(inviteSent);
 
   useEffect(() => {
     myRef
@@ -58,12 +54,21 @@ const Main = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           {isAddingFriend ? <AddFriend /> : <Chat />}
-
         </Grid>
         <Grid item xs={12} md={4} lg={3}>
           <FriendRequests />
         </Grid>
       </Grid>
+
+      <Snackbar
+        open={inviteSent}
+        autoHideDuration={3000}
+        onClose={() => {
+          dispatch(setInviteSent());
+        }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        message="Your invite was sent!"
+      />
     </div>
   );
 };
