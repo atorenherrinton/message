@@ -2,12 +2,8 @@
 
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectEmail,
-  selectLanguage,
-  selectName,
-} from "../../slices/authenticate";
-import { setAddingFriend } from "../../slices/communicate";
+import { selectEmail } from "../../slices/authenticate";
+import { setAddingFriend, setInviteSent } from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
@@ -16,8 +12,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-
-import firebase from "../../firebase/firebase";
 
 const useStyles = makeStyles({
   root: {
@@ -59,65 +53,34 @@ const useStyles = makeStyles({
 const AddFriend = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [friendEmail, setFriendEmail] = useState("");
+  const [otherEmail, setOtherEmail] = useState("");
   const myEmail = useSelector(selectEmail);
-  const myName = useSelector(selectName);
-  const myLanguage = useSelector(selectLanguage);
-
-  const addFriend = () => {
-    const db = firebase.firestore();
-    const friendRef = db.collection("users").doc(friendEmail);
-    const myRef = db.collection("users").doc(myEmail);
-
-    friendRef
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          const friendName = doc.data().name;
-          const friendLanguage = doc.data().language;
-          friendRef
-            .collection("friend-requests")
-            .doc(myEmail)
-            .set({
-              name: myName,
-              lanugage: myLanguage,
-              email: myEmail
-            })
-            .then(() => {
-              myRef
-                .collection("friend-requests")
-                .doc(friendEmail)
-                .set({
-                  name: friendName,
-                  language: friendLanguage,
-                  email: friendEmail
-
-                })
-                .then(() => {
-                  console.log("Document successfully written!");
-                })
-                .catch((error) => {
-                  console.error("Error writing document: ", error);
-                });
-              console.log("Document successfully written!");
-            })
-            .catch((error) => {
-              console.error("Error writing document: ", error);
-            });
-        } else {
-          // doc.data() will be undefined in this case
-          // Invite a friend via email
-          console.log("The user is not signed up");
-        }
-      })
-      .catch((error) => {
-        console.log("Error getting document:", error);
-      });
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    addFriend();
+    const data = {
+      action: "send_friend_request",
+      my_email: myEmail,
+      other_email: otherEmail,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Result:", data.result);
+        setOtherEmail("");
+        dispatch(setAddingFriend());
+        dispatch(setInviteSent());
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -135,25 +98,26 @@ const AddFriend = () => {
       </div>
       <div className={classes.content}>
         <CardContent>
-          <form noValidate autoComplete="off">
+          <form onSubmit={handleSubmit} noValidate autoComplete="off">
             <Typography className={classes.intro} variant="body2" gutterBottom>
               Invite a friend to join your message.
             </Typography>
             <TextField
               onChange={(event) => {
-                setFriendEmail(event.target.value);
+                setOtherEmail(event.target.value);
               }}
               className={classes.input}
               label="Email"
               name="email"
+              value={otherEmail}
               variant="outlined"
             />
             {/* <Alert className={classes.alert} severity="warning">
               {error}
             </Alert> */}
             <Button
-              onClick={handleSubmit}
               className={classes.button}
+              type="submit"
               variant="contained"
               color="secondary"
             >

@@ -65,7 +65,7 @@ const Contacts = () => {
           <List className={classes.list}>
             <ListItem alignItems="flex-start" button>
               <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                <Avatar alt="Remy Sharp" />
               </ListItemAvatar>
               <ListItemText
                 primary="Brunch this weekend?"
@@ -78,7 +78,7 @@ const Contacts = () => {
             </ListItem>
             <ListItem alignItems="flex-start" button>
               <ListItemAvatar>
-                <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Travis Howard" />
               </ListItemAvatar>
               <ListItemText
                 primary="Summer BBQ"
@@ -92,7 +92,7 @@ const Contacts = () => {
 
             <ListItem alignItems="flex-start" button>
               <ListItemAvatar>
-                <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
+                <Avatar alt="Cindy Baker" />
               </ListItemAvatar>
               <ListItemText
                 primary="Sandra Adams"

@@ -2,14 +2,14 @@
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { setName, setLanguage, selectEmail } from "../../slices/authenticate";
 import {
-  setEmail,
-  setName,
-  setLanguage,
-  selectEmail,
-} from "../../slices/authenticate";
-import { selectIsAddingFriend } from "../../slices/communicate";
-import AddFriend from "../../components/add/add-friend";
+  setInviteSent,
+  selectIsAddingFriend,
+  selectInviteSent,
+} from "../../slices/communicate";
+import AddFriend from "../../components/add-friend/add-friend";
+import Alert from "@material-ui/lab/Alert";
 import Chat from "../../components/chat/chat";
 import Contacts from "../../components/contacts/contacts";
 import Grid from "@material-ui/core/Grid";
@@ -24,6 +24,13 @@ const Main = () => {
   const db = firebase.firestore();
   const myRef = db.collection("users").doc(email);
   const isAddingFriend = useSelector(selectIsAddingFriend);
+  const inviteSent = useSelector(selectInviteSent);
+
+  if (inviteSent) {
+    setTimeout(() => {
+      dispatch(setInviteSent());
+    }, 2000);
+  }
 
   useEffect(() => {
     myRef
@@ -51,6 +58,7 @@ const Main = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           {isAddingFriend ? <AddFriend /> : <Chat />}
+
         </Grid>
         <Grid item xs={12} md={4} lg={3}>
           <FriendRequests />

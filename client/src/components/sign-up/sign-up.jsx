@@ -129,11 +129,6 @@ const SignUp = () => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        addUserToDatabase(user.uid);
-        dispatch(setUser(user.uid));
-      })
       .catch((error) => {
         dispatch(setError(error.message));
       });
@@ -141,7 +136,30 @@ const SignUp = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    createUser(email, password, name, language);
+    createUser();
+    // Add user to database
+    const data = {
+      action: "add_user_to_database",
+      email: email,
+      name: name,
+      language: language,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Result:", data.result);
+        dispatch(setUser());
+      })
+      .catch((error) => {
+        dispatch(setError(error));
+      });
   };
 
   return (
