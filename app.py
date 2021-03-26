@@ -3,6 +3,9 @@ import firebase_admin
 from firebase_admin import auth
 from firebase_admin import credentials
 from firebase_admin import firestore
+from datetime import datetime
+from pytz import timezone
+import pytz
 
 app = Flask(__name__, static_folder='client/build', static_url_path='')
 app.debug = True
@@ -15,10 +18,11 @@ db = firestore.client()
 
 
 def add_user_to_database():
-    email, name, language = request.json['email'], request.json['name'], request.json['language']
-    db.collection(u'users').document(email).set({
-        u'name': name,
-        u'language': language,
+    my_email, my_name, my_language = request.json[
+        'my_email'], request.json['my_name'], request.json['my_language']
+    db.collection(u'users').document(my_email).set({
+        u'name': my_name,
+        u'language': my_language,
     })
     return 'successfully added user to database'
 
@@ -48,17 +52,17 @@ def send_friend_request():
 
 
 def get_friends():
-    email = request.json['email']
+    my_email = request.json['my_email']
     docs = db.collection(u'users').document(
-        email).collection(u'friends').stream()
+        my_email).collection(u'friends').stream()
     result = [doc.to_dict() for doc in docs]
     return result
 
 
 def get_friend_requests():
-    email = request.json['email']
+    my_email = request.json['my_email']
     docs = db.collection(u'users').document(
-        email).collection(u'friend-requests').stream()
+        my_email).collection(u'friend-requests').stream()
     result = [doc.to_dict() for doc in docs]
     return result
 
@@ -108,6 +112,39 @@ def delete_friend_request():
         return 'request object was deleted'
 
 
+def load_messages():
+    my_email, other_email = request.json['my_email'], request.json['other_email']
+    docs = db.collection(u'users').document(my_email).collection(
+        u'friends').document(other_email).collection(u'conversation').stream()
+    result = [doc.to_dict() for doc in docs]
+    return result
+
+
+def send_message():
+    my_email, other_email, message = request.json[
+        'my_email'], request.json['other_email'], request.json['message']
+
+    now = datetime.now(tz=pytz.utc)
+    pst = now.astimezone(timezone('US/Pacific'))
+    full_date = pst.strftime("%B %d %Y, %I:%M:%S %p")
+    year, month, day, day_of_week = pst.strftime(
+        "%Y %B %d %A").split(" ")
+    time = pst.strftime("%I:%M %p")
+    date = {u'year': year, u'date': f'{month}, {day}',
+            u'day_of_week': day_of_week, u'time': time}
+
+    my_messages = db.collection(u'users').document(my_email).collection(
+        u'friends').document(other_email).collection(u'conversation')
+    other_messages = db.collection(u'users').document(other_email).collection(
+        u'friends').document(my_email).collection(u'conversation')
+
+    my_messages.document(full_date).set(
+        {u'message': message, u'email': my_email, u'date': date})
+    other_messages.document(full_date).set(
+        {u'message': message, u'email': my_email, u'date': date})
+    return 'message was sent'
+
+
 firebase_actions = {
     "add_user_to_database": add_user_to_database,
     "get_friends": get_friends,
@@ -115,6 +152,8 @@ firebase_actions = {
     "send_friend_request": send_friend_request,
     "accept_friend_request": accept_friend_request,
     "delete_friend_request": delete_friend_request,
+    "load_messages": load_messages,
+    "send_message": send_message,
 }
 
 

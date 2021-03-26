@@ -1,12 +1,15 @@
 /** @format */
 
 import { configureStore } from "@reduxjs/toolkit";
-import communicateReducer from "../slices/communicate";
 import authenticateReducer from "../slices/authenticate";
+import communicateReducer from "../slices/communicate";
+import feedbackReducer from "../slices/feedback";
 
 export default configureStore({
   reducer: {
-    communicate: communicateReducer,
     authenticate: authenticateReducer,
+    communicate: communicateReducer,
+    feedback: feedbackReducer,
   },
 });
+  

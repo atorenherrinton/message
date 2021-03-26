@@ -7,16 +7,15 @@ export const authenticateSlice = createSlice({
   initialState: {
     welcome: true,
     hasAccount: false,
-    name: "",
-    language: "",
-    email: "",
+    myName: "",
+    myLanguage: "",
+    myEmail: "",
     password: "",
-    error: "",
     user: false,
   },
   reducers: {
-    setName: (state, action) => {
-      state.name = action.payload;
+    setMyName: (state, action) => {
+      state.myName = action.payload;
     },
     setWelcome: (state) => {
       state.welcome = !state.welcome;
@@ -24,17 +23,14 @@ export const authenticateSlice = createSlice({
     setHasAccount: (state) => {
       state.hasAccount = !state.hasAccount;
     },
-    setLanguage: (state, action) => {
-      state.language = action.payload;
+    setMyLanguage: (state, action) => {
+      state.myLanguage = action.payload;
     },
-    setEmail: (state, action) => {
-      state.email = action.payload;
+    setMyEmail: (state, action) => {
+      state.myEmail = action.payload;
     },
     setPassword: (state, action) => {
       state.password = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
     },
     setUser: (state) => {
       state.user = !state.user;
@@ -45,11 +41,10 @@ export const authenticateSlice = createSlice({
 export const {
   setWelcome,
   setHasAccount,
-  setLanguage,
-  setName,
-  setEmail,
+  setMyLanguage,
+  setMyName,
+  setMyEmail,
   setPassword,
-  setError,
   setUser,
 } = authenticateSlice.actions;
 
@@ -58,11 +53,10 @@ export const {
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 export const selectWelcome = (state) => state.authenticate.welcome;
 export const selectHasAccount = (state) => state.authenticate.hasAccount;
-export const selectLanguage = (state) => state.authenticate.language;
-export const selectName = (state) => state.authenticate.name;
-export const selectEmail = (state) => state.authenticate.email;
+export const selectMyLanguage = (state) => state.authenticate.myLanguage;
+export const selectMyName = (state) => state.authenticate.myName;
+export const selectMyEmail = (state) => state.authenticate.myEmail;
 export const selectPassword = (state) => state.authenticate.password;
-export const selectError = (state) => state.authenticate.error;
 export const selectUser = (state) => state.authenticate.user;
 
 export default authenticateSlice.reducer;

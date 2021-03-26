@@ -41,6 +41,7 @@ const Header = () => {
       .then(() => {
         // Sign-out successful.
         dispatch(setUser());
+        localStorage.clear();
       })
       .catch((error) => {
         const errorMessage = error.message;

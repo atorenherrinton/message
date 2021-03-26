@@ -1,8 +1,8 @@
 /** @format */
 
-import React from "react";
-import { useSelector } from "react-redux";
-import { selectUser } from "./slices/authenticate";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, setMyEmail, setUser } from "./slices/authenticate";
 import {
   createMuiTheme,
   makeStyles,
@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const theme = createMuiTheme({
     palette: {
@@ -37,7 +38,15 @@ const App = () => {
     },
   });
 
+  const [loaded, setLoaded] = useState(false);
+  const cache = JSON.parse(localStorage.getItem("userInfo"));
 
+  if (!loaded && cache) {
+    console.log(cache);
+    dispatch(setUser());
+    dispatch(setMyEmail(cache));
+    setLoaded(true);
+  }
 
   return (
     <div className={classes.root}>

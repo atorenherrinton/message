@@ -21,20 +21,24 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import firebase from "../../firebase/firebase";
 import {
   setHasAccount,
-  setName,
-  setEmail,
+  setMyName,
+  setMyEmail,
   setPassword,
-  setError,
   setWelcome,
-  setLanguage,
+  setMyLanguage,
   setUser,
-  selectError,
-  selectLanguage,
+  selectMyLanguage,
   selectWelcome,
-  selectName,
-  selectEmail,
+  selectMyName,
+  selectMyEmail,
   selectPassword,
 } from "../../slices/authenticate";
+import {
+  setServerError,
+  setValidationError,
+  selectServerError,
+  selectValidationError,
+} from "../../slices/feedback";
 
 const useStyles = makeStyles({
   root: {
@@ -78,20 +82,20 @@ const useStyles = makeStyles({
 
 const SignUp = () => {
   const dispatch = useDispatch();
-  const language = useSelector(selectLanguage);
-  const name = useSelector(selectName);
-  const email = useSelector(selectEmail);
+  const myLanguage = useSelector(selectMyLanguage);
+  const myName = useSelector(selectMyName);
+  const myEmail = useSelector(selectMyEmail);
   const password = useSelector(selectPassword);
-  const error = useSelector(selectError);
-  if (error) {
+  const validationError = useSelector(selectValidationError);
+  const serverError = useSelector(selectServerError);
+  if (serverError) {
     setTimeout(() => {
-      dispatch(setError(""));
+      dispatch(setServerError(""));
     }, 3000);
   }
   const welcome = useSelector(selectWelcome);
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
-  const db = firebase.firestore();
 
   const languages = [
     {
@@ -119,38 +123,51 @@ const SignUp = () => {
   const createUser = () => {
     firebase
       .auth()
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(myEmail, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        localStorage.setItem("userInfo", JSON.stringify(user.email));
+      })
       .catch((error) => {
-        dispatch(setError(error.message));
+        dispatch(setServerError(error.message));
       });
+  };
+
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    createUser();
-    // Add user to database
-    const data = {
-      action: "add_user_to_database",
-      email: email,
-      name: name,
-      language: language,
-    };
+    if (validateEmail(myEmail)) {
+      createUser();
+      // Add user to database
+      const data = {
+        action: "add_user_to_database",
+        my_email: myEmail,
+        my_name: myName,
+        my_language: myLanguage,
+      };
 
-    fetch("/firebase", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Result:", data.result);
-        dispatch(setUser());
+      fetch("/firebase", {
+        method: "POST", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       })
-      .catch((error) => {
-        dispatch(setError(error));
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("add_user_to_database:", data.result);
+          dispatch(setUser());
+        })
+        .catch((error) => {
+          dispatch(setServerError(error));
+        });
+    } else {
+      dispatch(setValidationError("Please enter a valid email"));
+    }
   };
 
   return (
@@ -178,9 +195,9 @@ const SignUp = () => {
                   className={classes.dropdown}
                   select
                   label="Select your language"
-                  value={language}
+                  value={myLanguage}
                   onChange={(event) => {
-                    dispatch(setLanguage(event.target.value));
+                    dispatch(setMyLanguage(event.target.value));
                     dispatch(setWelcome());
                   }}
                   variant="outlined"
@@ -198,10 +215,9 @@ const SignUp = () => {
                   className={classes.dropdown}
                   select
                   label="Select your language"
-                  value={language}
+                  value={myLanguage}
                   onChange={(event) => {
-                    dispatch(setLanguage(event.target.value));
-                    console.log(language);
+                    dispatch(setMyLanguage(event.target.value));
                   }}
                   variant="outlined"
                 >
@@ -213,7 +229,7 @@ const SignUp = () => {
                 </TextField>
                 <TextField
                   onChange={(event) => {
-                    dispatch(setName(event.target.value));
+                    dispatch(setMyName(event.target.value));
                   }}
                   className={classes.input}
                   label="Name"
@@ -222,11 +238,14 @@ const SignUp = () => {
                 />
                 <TextField
                   onChange={(event) => {
-                    dispatch(setEmail(event.target.value));
+                    dispatch(setMyEmail(event.target.value));
                   }}
+                  error={validationError ? true : false}
+                  helperText={validationError}
                   className={classes.input}
                   label="Email"
                   name="email"
+                  type="email"
                   variant="outlined"
                 />
                 <FormControl className={classes.input} variant="outlined">
@@ -253,10 +272,11 @@ const SignUp = () => {
                       </InputAdornment>
                     }
                     labelWidth={70}
+                    autoComplete="new-password"
                   />
-                  {error ? (
+                  {serverError ? (
                     <Alert className={classes.alert} severity="warning">
-                      {error}
+                      {serverError}
                     </Alert>
                   ) : null}
                 </FormControl>

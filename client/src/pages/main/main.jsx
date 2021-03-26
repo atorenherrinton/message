@@ -2,13 +2,16 @@
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setName, setLanguage, selectEmail } from "../../slices/authenticate";
+import { setMyName, setMyLanguage, selectMyEmail } from "../../slices/authenticate";
 import {
-  loadFriendRequests,
-  setInviteSent,
   selectIsAddingFriend,
-  selectInviteSent,
+  selectIsChatOpen,
 } from "../../slices/communicate";
+import {
+  setIsSnackbarOpen,
+  selectIsSnackbarOpen,
+  selectSnackbarMessage,
+} from "../../slices/feedback";
 import AddFriend from "../../components/add-friend/add-friend";
 import Chat from "../../components/chat/chat";
 import Contacts from "../../components/contacts/contacts";
@@ -21,44 +24,21 @@ import firebase from "../../firebase/firebase";
 
 const Main = () => {
   const dispatch = useDispatch();
-  const email = useSelector(selectEmail);
+  const myEmail = useSelector(selectMyEmail);
   const db = firebase.firestore();
-  const myRef = db.collection("users").doc(email);
+  const myRef = db.collection("users").doc(myEmail);
   const isAddingFriend = useSelector(selectIsAddingFriend);
-  const inviteSent = useSelector(selectInviteSent);
+  const isSnackbarOpen = useSelector(selectIsSnackbarOpen);
+  const snackbarMessage = useSelector(selectSnackbarMessage);
+  const isChatOpen = useSelector(selectIsChatOpen);
 
-  const getFriendRequests = () => {
-    const data = {
-      action: "get_friend_requests",
-      email: email,
-    };
-
-    fetch("/firebase", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Result:", data.result);
-        if (data.result) {
-          dispatch(loadFriendRequests(data.result));
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  
   useEffect(() => {
     myRef
       .get()
       .then((doc) => {
         if (doc.exists) {
-          dispatch(setName(doc.data().name));
-          dispatch(setLanguage(doc.data().language));
+          dispatch(setMyName(doc.data().name));
+          dispatch(setMyLanguage(doc.data().language));
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
@@ -67,7 +47,6 @@ const Main = () => {
       .catch((error) => {
         console.log("Error getting document:", error);
       });
-    getFriendRequests();
   }, []);
 
   return (
@@ -78,7 +57,7 @@ const Main = () => {
           <Contacts />
         </Grid>
         <Grid item xs={12} md={4}>
-          {isAddingFriend ? <AddFriend /> : <Chat />}
+          {isAddingFriend ? <AddFriend /> : isChatOpen ? <Chat /> : null}
         </Grid>
         <Grid item xs={12} md={4} lg={3}>
           <FriendRequests />
@@ -86,13 +65,13 @@ const Main = () => {
       </Grid>
 
       <Snackbar
-        open={inviteSent}
+        open={isSnackbarOpen}
         autoHideDuration={3000}
         onClose={() => {
-          dispatch(setInviteSent());
+          dispatch(setIsSnackbarOpen());
         }}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message="Your invite was sent!"
+        message={snackbarMessage}
       />
     </div>
   );

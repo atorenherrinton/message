@@ -2,10 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectEmail } from "../../slices/authenticate";
+import { selectMyEmail } from "../../slices/authenticate";
 import {
   setAddingFriend,
   selectIsAddingFriend,
+  setIsChatOpen,
+  setOtherEmail,
+  setOtherName,
+  setOtherLanguage,
 } from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
@@ -40,14 +44,14 @@ const useStyles = makeStyles((theme) => ({
 const Contacts = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const email = useSelector(selectEmail);
+  const myEmail = useSelector(selectMyEmail);
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const [friends, setFriends] = useState([]);
 
   const getFriends = () => {
     const data = {
       action: "get_friends",
-      email: email,
+      my_email: myEmail,
     };
 
     fetch("/firebase", {
@@ -72,6 +76,16 @@ const Contacts = () => {
   useEffect(() => {
     getFriends();
   }, []);
+
+  const handleOpenChat = (friend) => {
+    if (isAddingFriend) {
+      dispatch(setAddingFriend());
+    }
+    dispatch(setIsChatOpen(true));
+    dispatch(setOtherEmail(friend.email));
+    dispatch(setOtherName(friend.name));
+    dispatch(setOtherLanguage(friend.language));
+  };
 
   return (
     <div className={classes.root}>
@@ -98,13 +112,24 @@ const Contacts = () => {
           <List className={classes.list}>
             {friends.map((friend, idx) => {
               return (
-                <ListItem key={idx} alignItems="flex-start" button>
+                <ListItem
+                  onClick={() => handleOpenChat(friend)}
+                  key={idx}
+                  alignItems="flex-start"
+                  button
+                >
                   <ListItemAvatar>
                     <Avatar alt={friend.name} />
                   </ListItemAvatar>
                   <ListItemText
                     primary={friend.name}
-                    secondary={<React.Fragment>{friend.email}</React.Fragment>}
+                    secondary={
+                      <React.Fragment>
+                        {friend.conversation
+                          ? friend.conversation[friend.conversation.length - 1]
+                          : `Start your conversation with ${friend.name}`}
+                      </React.Fragment>
+                    }
                   />
                 </ListItem>
               );

@@ -20,14 +20,18 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import firebase from "../../firebase/firebase";
 import {
   setHasAccount,
-  setEmail,
+  setMyEmail,
   setPassword,
-  setError,
   setUser,
-  selectEmail,
-  selectError,
+  selectMyEmail,
   selectPassword,
 } from "../../slices/authenticate";
+import {
+  setValidationError,
+  setServerError,
+  selectServerError,
+  selectValidationError,
+} from "../../slices/feedback";
 
 const useStyles = makeStyles({
   root: {
@@ -76,29 +80,40 @@ const useStyles = makeStyles({
 
 const SignUp = () => {
   const dispatch = useDispatch();
-  const email = useSelector(selectEmail);
+  const myEmail = useSelector(selectMyEmail);
   const password = useSelector(selectPassword);
-  const error = useSelector(selectError);
-  if (error) {
+  const serverError = useSelector(selectServerError);
+  const validationError = useSelector(selectValidationError);
+  if (serverError) {
     setTimeout(() => {
-      dispatch(setError(""));
+      dispatch(setServerError(""));
     }, 3000);
   }
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
 
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        dispatch(setUser(user.uid));
-      })
-      .catch((error) => {
-        dispatch(setError(error.message));
-      });
+    if (validateEmail(myEmail)) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(myEmail, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          localStorage.setItem("userInfo", JSON.stringify(user.email));
+          dispatch(setUser());
+        })
+        .catch((error) => {
+          dispatch(setServerError(error.message));
+        });
+    } else {
+      dispatch(setValidationError("Please enter a valid email"));
+    }
   };
 
   return (
@@ -114,11 +129,14 @@ const SignUp = () => {
             <div>
               <TextField
                 onChange={(event) => {
-                  dispatch(setEmail(event.target.value));
+                  dispatch(setMyEmail(event.target.value));
                 }}
+                error={validationError ? true : false}
+                helperText={validationError}
                 className={classes.input}
                 label="Email"
                 name="email"
+                type="email"
                 variant="outlined"
               />
               <FormControl className={classes.input} variant="outlined">
@@ -146,9 +164,9 @@ const SignUp = () => {
                   }
                   labelWidth={70}
                 />
-                {error ? (
+                {serverError ? (
                   <Alert className={classes.alert} severity="warning">
-                    {error}
+                    {serverError}
                   </Alert>
                 ) : null}
               </FormControl>

@@ -1,8 +1,9 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectEmail } from "../../slices/authenticate";
+import { setIsSnackbarOpen, setSnackbarMessage } from "../../slices/feedback";
+import { useDispatch, useSelector } from "react-redux";
+import { selectMyEmail } from "../../slices/authenticate";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -35,14 +36,15 @@ const useStyles = makeStyles((theme) => ({
 
 const FriendRequests = () => {
   const classes = useStyles();
-  const email = useSelector(selectEmail);
+  const dispatch = useDispatch();
+  const myEmail = useSelector(selectMyEmail);
 
   const [friendRequests, setFriendRequests] = useState([]);
 
   const getFriendRequests = () => {
     const data = {
       action: "get_friend_requests",
-      email: email,
+      my_email: myEmail,
     };
 
     fetch("/firebase", {
@@ -67,7 +69,7 @@ const FriendRequests = () => {
   const handleAddFriend = (friend) => {
     const data = {
       action: "accept_friend_request",
-      my_email: email,
+      my_email: myEmail,
       other_email: friend.email,
     };
 
@@ -80,20 +82,22 @@ const FriendRequests = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        getFriendRequests();
         console.log("accept_friend_request:", data.result);
+        dispatch(setIsSnackbarOpen());
+        dispatch(
+          setSnackbarMessage(`${friend.name} was added to your friends list`)
+        );
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-    setFriendRequests([
-      ...friendRequests.filter((friendRequest) => friendRequest !== friend),
-    ]);
   };
 
   const handleIgnoreFriend = (friend) => {
     const data = {
       action: "delete_friend_request",
-      my_email: email,
+      my_email: myEmail,
       other_email: friend.email,
     };
 
@@ -107,13 +111,11 @@ const FriendRequests = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("delete_friend_request:", data.result);
+        getFriendRequests();
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-    setFriendRequests([
-      ...friendRequests.filter((friendRequest) => friendRequest !== friend),
-    ]);
   };
 
   useEffect(() => {

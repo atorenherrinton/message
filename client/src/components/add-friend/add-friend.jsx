@@ -2,8 +2,14 @@
 
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectEmail } from "../../slices/authenticate";
-import { setAddingFriend, setInviteSent } from "../../slices/communicate";
+import { selectMyEmail } from "../../slices/authenticate";
+import {
+  setValidationError,
+  selectValidationError,
+  setIsSnackbarOpen,
+  setSnackbarMessage,
+} from "../../slices/feedback";
+import { setAddingFriend } from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -14,8 +20,9 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles({
   root: {
-    marginTop: "2rem",
     minWidth: 275,
+    marginTop: "2rem",
+    marginBottom: "5rem",
   },
   alert: {
     marginTop: "0.75rem",
@@ -53,33 +60,45 @@ const AddFriend = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [otherEmail, setOtherEmail] = useState("");
-  const myEmail = useSelector(selectEmail);
+  const myEmail = useSelector(selectMyEmail);
+  const validationError = useSelector(selectValidationError);
+
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = {
-      action: "send_friend_request",
-      my_email: myEmail,
-      other_email: otherEmail,
-    };
+    // if the email isn't valid
+    if (validateEmail(otherEmail)) {
+      const data = {
+        action: "send_friend_request",
+        my_email: myEmail,
+        other_email: otherEmail,
+      };
 
-    fetch("/firebase", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("send_friend_request:", data.result);
-        setOtherEmail("");
+      fetch("/firebase", {
+        method: "POST", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    dispatch(setAddingFriend());
-    dispatch(setInviteSent());
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("send_friend_request:", data.result);
+          setOtherEmail("");
+          dispatch(setAddingFriend());
+          dispatch(setIsSnackbarOpen());
+          dispatch(setSnackbarMessage("Your friend request was sent"));
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    } else {
+      dispatch(setValidationError("Please enter a valid email"));
+    }
   };
 
   return (
@@ -105,15 +124,15 @@ const AddFriend = () => {
               onChange={(event) => {
                 setOtherEmail(event.target.value);
               }}
+              error={validationError ? true : false}
+              helperText={validationError}
               className={classes.input}
               label="Email"
               name="email"
+              type="email"
               value={otherEmail}
               variant="outlined"
             />
-            {/* <Alert className={classes.alert} severity="warning">
-              {error}
-            </Alert> */}
             <Button
               className={classes.button}
               type="submit"

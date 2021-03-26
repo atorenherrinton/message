@@ -1,9 +1,21 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  selectMyEmail,
+  selectMyLanguage,
+  selectMyName,
+} from "../../slices/authenticate";
+
+import {
+  selectOtherEmail,
+  selectOtherLanguage,
+  selectOtherName,
+} from "../../slices/communicate";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -40,46 +52,103 @@ const useStyles = makeStyles((theme) => ({
 
 const Chat = () => {
   const classes = useStyles();
-  const [message, setMessage] = useState({
-    text: "",
-    isFriend: true,
-  });
+  const myEmail = useSelector(selectMyEmail);
+  const myName = useSelector(selectMyLanguage);
+  const myLanguage = useSelector(selectMyName);
+  const otherEmail = useSelector(selectOtherEmail);
+  const otherName = useSelector(selectOtherName);
+  const otherLanguage = useSelector(selectOtherLanguage);
+
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadMessages = () => {
+    const data = {
+      action: "load_messages",
+      my_email: myEmail,
+      other_email: otherEmail,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setMessages(data.result);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const sendMessage = () => {
+    const data = {
+      action: "send_message",
+      my_email: myEmail,
+      my_name: myName,
+      my_language: myLanguage,
+      other_email: otherEmail,
+      other_name: otherName,
+      other_language: otherLanguage,
+      message: message,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        loadMessages();
+        console.log("send_message:", data.result);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   const handleChange = (event) => {
-    const { value, name } = event.target;
-    setMessage({ ...message, [name]: value });
+    setMessage(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (message.text.length > 0) {
-      setMessages([...messages, message]);
-      setMessage({ text: "", isFriend: !message.isFriend });
+    if (message.length > 0) {
+      sendMessage();
+      setMessage("");
     }
   };
+
+  useEffect(() => {
+    loadMessages();
+  }, []);
+
   return (
     <div className={classes.root}>
       <Card>
         <CardHeader
-          avatar={
-            <Avatar aria-label="recipe" className={classes.avatar}>
-              S
-            </Avatar>
-          }
+          avatar={<Avatar alt={otherName} className={classes.avatar} />}
           action={
             <IconButton aria-label="settings">
               <MoreVertIcon />
             </IconButton>
           }
-          title="Seth Toren-Herrinton"
+          title={otherName}
         />
         <CardContent>
           {messages.map((message, idx) => (
             <Message
               key={idx}
-              isFriend={message.isFriend}
-              text={message.text}
+              isFriend={message.email == otherEmail}
+              text={message.message}
             />
           ))}
           <FormControl className={classes.input} variant="outlined">
@@ -90,7 +159,7 @@ const Chat = () => {
               id="outlined-adornment-password"
               type="text"
               name="text"
-              value={message.text}
+              value={message}
               onChange={handleChange}
               onKeyPress={(event) => {
                 if (event.key === "Enter") {
@@ -109,6 +178,7 @@ const Chat = () => {
                 </InputAdornment>
               }
               labelWidth={67}
+              autoComplete="off"
             />
           </FormControl>
         </CardContent>
