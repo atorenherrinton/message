@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectMyEmail,
   selectMyLanguage,
@@ -9,10 +9,14 @@ import {
 } from "../../slices/authenticate";
 
 import {
+  setMessages,
+  selectMessages,
   selectOtherEmail,
   selectOtherLanguage,
   selectOtherName,
 } from "../../slices/communicate";
+
+import firebase from "../../firebase/firebase";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
@@ -52,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Chat = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const myEmail = useSelector(selectMyEmail);
   const myName = useSelector(selectMyLanguage);
   const myLanguage = useSelector(selectMyName);
@@ -60,29 +65,21 @@ const Chat = () => {
   const otherLanguage = useSelector(selectOtherLanguage);
 
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const messages = useSelector(selectMessages);
 
   const loadMessages = () => {
-    const data = {
-      action: "load_messages",
-      my_email: myEmail,
-      other_email: otherEmail,
-    };
-
-    fetch("/firebase", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMessages(data.result);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+    const db = firebase.firestore();
+    db.collection("users")
+      .doc(myEmail)
+      .collection("friends")
+      .doc(otherEmail)
+      .collection("conversation")
+      .onSnapshot((querySnapshot) => {
+        const temp = [];
+        querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+        });
+        dispatch(setMessages(temp));
       });
   };
 
@@ -107,7 +104,6 @@ const Chat = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        loadMessages();
         console.log("send_message:", data.result);
       })
       .catch((error) => {

@@ -11,7 +11,8 @@ app = Flask(__name__, static_folder='client/build', static_url_path='')
 app.debug = True
 
 # Use a service account
-cred = credentials.Certificate('sdk/message-fe49a-35a0d495d2fc.json')
+cred = credentials.Certificate(
+    'sdk/message-fe49a-firebase-adminsdk-pmzac-d2e7ab4242.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -49,23 +50,6 @@ def send_friend_request():
         # document.data() will be undefined in this case
         # Invite a friend via email
         return 'user was not found'
-
-
-def get_friends():
-    my_email = request.json['my_email']
-    docs = db.collection(u'users').document(
-        my_email).collection(u'friends').stream()
-    result = [doc.to_dict() for doc in docs]
-    return result
-
-
-def get_friend_requests():
-    my_email = request.json['my_email']
-    docs = db.collection(u'users').document(
-        my_email).collection(u'friend-requests').stream()
-    result = [doc.to_dict() for doc in docs]
-    return result
-
 
 def accept_friend_request():
     my_email, other_email = request.json['my_email'], request.json['other_email']
@@ -111,15 +95,6 @@ def delete_friend_request():
             other_ref.delete()
         return 'request object was deleted'
 
-
-def load_messages():
-    my_email, other_email = request.json['my_email'], request.json['other_email']
-    docs = db.collection(u'users').document(my_email).collection(
-        u'friends').document(other_email).collection(u'conversation').stream()
-    result = [doc.to_dict() for doc in docs]
-    return result
-
-
 def send_message():
     my_email, other_email, message = request.json[
         'my_email'], request.json['other_email'], request.json['message']
@@ -129,7 +104,7 @@ def send_message():
     full_date = pst.strftime("%B %d %Y, %I:%M:%S %p")
     year, month, day, day_of_week = pst.strftime(
         "%Y %B %d %A").split(" ")
-    time = pst.strftime("%I:%M %p")
+    time = pst.strftime("%H:%M:%S")
     date = {u'year': year, u'date': f'{month}, {day}',
             u'day_of_week': day_of_week, u'time': time}
 
@@ -147,12 +122,9 @@ def send_message():
 
 firebase_actions = {
     "add_user_to_database": add_user_to_database,
-    "get_friends": get_friends,
-    "get_friend_requests": get_friend_requests,
     "send_friend_request": send_friend_request,
     "accept_friend_request": accept_friend_request,
     "delete_friend_request": delete_friend_request,
-    "load_messages": load_messages,
     "send_message": send_message,
 }
 

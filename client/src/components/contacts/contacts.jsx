@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
 import {
+  resetMessages,
   setAddingFriend,
   selectIsAddingFriend,
   setIsChatOpen,
@@ -21,6 +22,9 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+
+import firebase from "../../firebase/firebase";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,27 +53,16 @@ const Contacts = () => {
   const [friends, setFriends] = useState([]);
 
   const getFriends = () => {
-    const data = {
-      action: "get_friends",
-      my_email: myEmail,
-    };
-
-    fetch("/firebase", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("get_friends:", data.result);
-        if (data.result) {
-          setFriends(data.result);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+    const db = firebase.firestore();
+    db.collection("users")
+      .doc(myEmail)
+      .collection("friends")
+      .onSnapshot((querySnapshot) => {
+        const temp = [];
+        querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+        });
+        setFriends(temp);
       });
   };
 
@@ -81,6 +74,7 @@ const Contacts = () => {
     if (isAddingFriend) {
       dispatch(setAddingFriend());
     }
+    dispatch(resetMessages());
     dispatch(setIsChatOpen(true));
     dispatch(setOtherEmail(friend.email));
     dispatch(setOtherName(friend.name));

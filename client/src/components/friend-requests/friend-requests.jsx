@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { setIsSnackbarOpen, setSnackbarMessage } from "../../slices/feedback";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
@@ -13,6 +13,8 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListSubheader from "@material-ui/core/ListSubheader";
+
+import firebase from "../../firebase/firebase";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,27 +44,16 @@ const FriendRequests = () => {
   const [friendRequests, setFriendRequests] = useState([]);
 
   const getFriendRequests = () => {
-    const data = {
-      action: "get_friend_requests",
-      my_email: myEmail,
-    };
-
-    fetch("/firebase", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("get_friend_requests:", data.result);
-        if (data.result) {
-          setFriendRequests(data.result);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+    const db = firebase.firestore();
+    db.collection("users")
+      .doc(myEmail)
+      .collection("friend-requests")
+      .onSnapshot((querySnapshot) => {
+        const temp = [];
+        querySnapshot.forEach((doc) => {
+          temp.push(doc.data());
+        });
+        setFriendRequests(temp);
       });
   };
 
