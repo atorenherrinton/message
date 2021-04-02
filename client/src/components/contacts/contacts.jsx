@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
 import {
   resetMessages,
+  setMessages,
   setAddingFriend,
   selectIsAddingFriend,
   setIsChatOpen,
@@ -24,7 +25,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 
 import firebase from "../../firebase/firebase";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +52,29 @@ const Contacts = () => {
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const [friends, setFriends] = useState([]);
 
+  const loadMessages = (friend) => {
+    const db = firebase.firestore();
+    db.collection("users")
+      .doc(myEmail)
+      .collection("friends")
+      .doc(friend.email)
+      .collection("conversation")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          const temp = [];
+          querySnapshot.forEach((doc) => {
+            temp.push(doc.data());
+          });
+          dispatch(setMessages(temp));
+        });
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+  };
+
   const getFriends = () => {
     const db = firebase.firestore();
     db.collection("users")
@@ -75,6 +98,7 @@ const Contacts = () => {
       dispatch(setAddingFriend());
     }
     dispatch(resetMessages());
+    loadMessages(friend);
     dispatch(setIsChatOpen(true));
     dispatch(setOtherEmail(friend.email));
     dispatch(setOtherName(friend.name));

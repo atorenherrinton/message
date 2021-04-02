@@ -1,13 +1,15 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
 import {
+  setIsActionable,
   setValidationError,
-  selectValidationError,
   setIsSnackbarOpen,
   setSnackbarMessage,
+  selectCancelSend,
+  selectValidationError,
 } from "../../slices/feedback";
 import { setAddingFriend } from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
@@ -62,6 +64,8 @@ const AddFriend = () => {
   const [otherEmail, setOtherEmail] = useState("");
   const myEmail = useSelector(selectMyEmail);
   const validationError = useSelector(selectValidationError);
+  const cancelSend = useSelector(selectCancelSend);
+  var sendFriendRequest;
 
   const validateEmail = (email) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -72,34 +76,44 @@ const AddFriend = () => {
     event.preventDefault();
     // if the email isn't valid
     if (validateEmail(otherEmail)) {
-      const data = {
-        action: "send_friend_request",
-        my_email: myEmail,
-        other_email: otherEmail,
-      };
+      setOtherEmail("");
+      dispatch(setAddingFriend());
+      dispatch(setIsSnackbarOpen());
+      dispatch(setSnackbarMessage("Your friend request was sent"));
+      sendFriendRequest = setTimeout(() => {
+        const data = {
+          action: "send_friend_request",
+          my_email: myEmail,
+          other_email: otherEmail,
+        };
 
-      fetch("/firebase", {
-        method: "POST", // or 'PUT'
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("send_friend_request:", data.result);
-          setOtherEmail("");
-          dispatch(setAddingFriend());
-          dispatch(setIsSnackbarOpen());
-          dispatch(setSnackbarMessage("Your friend request was sent"));
+        fetch("/firebase", {
+          method: "POST", // or 'PUT'
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("send_friend_request:", data.result);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }, 2000);
     } else {
       dispatch(setValidationError("Please enter a valid email"));
     }
   };
+
+  useEffect(() => {
+    if (cancelSend) {
+      clearTimeout(sendFriendRequest);
+      dispatch(setSnackbarMessage("Your friend request was cancelled"));
+      dispatch(setIsActionable());
+    }
+  }, []);
 
   return (
     <Card className={classes.root}>
