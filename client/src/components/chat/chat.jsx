@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectMyEmail,
@@ -9,14 +9,11 @@ import {
 } from "../../slices/authenticate";
 
 import {
-  setMessages,
-  selectMessages,
   selectOtherEmail,
   selectOtherLanguage,
   selectOtherName,
+  setScrollToLast,
 } from "../../slices/communicate";
-
-import firebase from "../../firebase/firebase";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
@@ -26,17 +23,18 @@ import CardHeader from "@material-ui/core/CardHeader";
 import FormControl from "@material-ui/core/FormControl";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
+import Messages from "../messages/messages";
 import SendIcon from "@material-ui/icons/Send";
 import IconButton from "@material-ui/core/IconButton";
 import { red } from "@material-ui/core/colors";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Message from "../message/message";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 300,
     maxWidth: 600,
+    height: "33%",
     marginTop: "2rem",
     marginBottom: "5rem",
   },
@@ -52,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "2rem",
     width: "100%",
   },
+  messages: {
+    width: "100%",
+    height: 350,
+  },
 }));
 
 const Chat = () => {
@@ -65,23 +67,6 @@ const Chat = () => {
   const otherLanguage = useSelector(selectOtherLanguage);
 
   const [message, setMessage] = useState("");
-  const messages = useSelector(selectMessages);
-
-  const loadMessages = () => {
-    const db = firebase.firestore();
-    db.collection("users")
-      .doc(myEmail)
-      .collection("friends")
-      .doc(otherEmail)
-      .collection("conversation")
-      .onSnapshot((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          temp.push(doc.data());
-        });
-        dispatch(setMessages(temp));
-      });
-  };
 
   const sendMessage = () => {
     const data = {
@@ -120,12 +105,9 @@ const Chat = () => {
     if (message.length > 0) {
       sendMessage();
       setMessage("");
+      dispatch(setScrollToLast());
     }
   };
-
-  useEffect(() => {
-    loadMessages();
-  }, []);
 
   return (
     <div className={classes.root}>
@@ -140,13 +122,7 @@ const Chat = () => {
           title={otherName}
         />
         <CardContent>
-          {messages.map((message, idx) => (
-            <Message
-              key={idx}
-              isFriend={message.email == otherEmail}
-              text={message.message}
-            />
-          ))}
+          <Messages />
           <FormControl className={classes.input} variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">
               Message

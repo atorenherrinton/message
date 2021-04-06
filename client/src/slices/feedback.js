@@ -9,8 +9,6 @@ export const feedbackSlice = createSlice({
     validationError: "",
     snackbarMessage: "",
     isSnackbarOpen: false,
-    isActionable: true,
-    cancelSend: false,
   },
   reducers: {
     setIsActionable: (state) => {

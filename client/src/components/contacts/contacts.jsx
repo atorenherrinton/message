@@ -91,7 +91,7 @@ const Contacts = () => {
 
   useEffect(() => {
     getFriends();
-  }, []);
+  });
 
   const handleOpenChat = (friend) => {
     if (isAddingFriend) {

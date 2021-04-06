@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { setIsSnackbarOpen, setSnackbarMessage } from "../../slices/feedback";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
-import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+import { makeStyles} from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
@@ -111,7 +111,7 @@ const FriendRequests = () => {
 
   useEffect(() => {
     getFriendRequests();
-  }, []);
+  });
 
   return (
     <div>

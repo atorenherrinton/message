@@ -1,7 +1,7 @@
 /** @format */
 
 // UncontrolledLottie.jsx
-import React, { Component } from "react";
+import React from "react";
 import Lottie from "react-lottie";
 import animationData from "../../assets/background.json";
 

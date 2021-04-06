@@ -7,7 +7,7 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginBottom: "0.5rem",
+
   },
   received: {
     backgroundColor: "#383C42",
@@ -29,37 +29,35 @@ const Message = (props) => {
   const classes = useStyles();
 
   return (
-    <div
-      className={classes.root}
-    >
-      {props.isFriend ? (
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="flex-start"
-        >
-          <div className={classes.received}>
-            <Typography variant="body2" gutterBottom>
-              {props.text}
-            </Typography>
-          </div>
-        </Grid>
-      ) : (
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="flex-end"
-        >
-          <div className={classes.sent}>
-            <Typography variant="body2" gutterBottom>
-              {props.text}
-            </Typography>
-          </div>
-        </Grid>
-      )}
-    </div>
+      <div className={classes.root}>
+        {props.isFriend ? (
+          <Grid
+            container
+            direction="column"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
+            <div className={classes.received}>
+              <Typography variant="body2" gutterBottom>
+                {props.text}
+              </Typography>
+            </div>
+          </Grid>
+        ) : (
+          <Grid
+            container
+            direction="column"
+            justify="flex-start"
+            alignItems="flex-end"
+          >
+            <div className={classes.sent}>
+              <Typography variant="body2" gutterBottom>
+                {props.text}
+              </Typography>
+            </div>
+          </Grid>
+        )}
+      </div>
   );
 };
 

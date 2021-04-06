@@ -1,18 +1,17 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
 import {
-  setIsActionable,
   setValidationError,
   setIsSnackbarOpen,
   setSnackbarMessage,
-  selectCancelSend,
   selectValidationError,
 } from "../../slices/feedback";
 import { setAddingFriend } from "../../slices/communicate";
 import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
@@ -27,7 +26,7 @@ const useStyles = makeStyles({
     marginBottom: "5rem",
   },
   alert: {
-    marginTop: "0.75rem",
+    marginBottom: "1rem",
   },
   button: {
     marginBottom: "0.75rem",
@@ -64,56 +63,57 @@ const AddFriend = () => {
   const [otherEmail, setOtherEmail] = useState("");
   const myEmail = useSelector(selectMyEmail);
   const validationError = useSelector(selectValidationError);
-  const cancelSend = useSelector(selectCancelSend);
-  var sendFriendRequest;
+  const [error, setError] = useState("");
+  if (error) {
+    setTimeout(() => {
+      setError("");
+    }, 3000);
+  }
 
   const validateEmail = (email) => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   };
 
+  const sendFriendRequest = () => {
+    const data = {
+      action: "send_friend_request",
+      my_email: myEmail,
+      other_email: otherEmail,
+    };
+
+    fetch("/firebase", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("send_friend_request:", data.result);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     // if the email isn't valid
-    if (validateEmail(otherEmail)) {
+    if (validateEmail(otherEmail) && otherEmail !== myEmail) {
       setOtherEmail("");
       dispatch(setAddingFriend());
       dispatch(setIsSnackbarOpen());
       dispatch(setSnackbarMessage("Your friend request was sent"));
-      sendFriendRequest = setTimeout(() => {
-        const data = {
-          action: "send_friend_request",
-          my_email: myEmail,
-          other_email: otherEmail,
-        };
-
-        fetch("/firebase", {
-          method: "POST", // or 'PUT'
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("send_friend_request:", data.result);
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-      }, 2000);
+      sendFriendRequest();
+    } else if (otherEmail === myEmail) {
+      setError("You cannot add yourself");
+      setOtherEmail("");
     } else {
       dispatch(setValidationError("Please enter a valid email"));
     }
   };
-
-  useEffect(() => {
-    if (cancelSend) {
-      clearTimeout(sendFriendRequest);
-      dispatch(setSnackbarMessage("Your friend request was cancelled"));
-      dispatch(setIsActionable());
-    }
-  }, []);
 
   return (
     <Card className={classes.root}>
@@ -124,6 +124,7 @@ const AddFriend = () => {
         <CloseIcon
           onClick={() => {
             dispatch(setAddingFriend());
+            dispatch(setValidationError(""));
           }}
           className={classes.close}
         />
@@ -147,6 +148,11 @@ const AddFriend = () => {
               value={otherEmail}
               variant="outlined"
             />
+            {error ? (
+              <Alert className={classes.alert} severity="warning">
+                {error}
+              </Alert>
+            ) : null}
             <Button
               className={classes.button}
               type="submit"

@@ -8,18 +8,14 @@ import {
   selectMyEmail,
 } from "../../slices/authenticate";
 import {
-  selectIsAddingFriend,
   selectIsChatOpen,
+  selectIsAddingFriend,
 } from "../../slices/communicate";
 import {
-  setCancelSend,
   setIsSnackbarOpen,
   selectIsSnackbarOpen,
   selectSnackbarMessage,
-  selectIsActionable,
 } from "../../slices/feedback";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 import AddFriend from "../../components/add-friend/add-friend";
 import Chat from "../../components/chat/chat";
 import Contacts from "../../components/contacts/contacts";
@@ -30,23 +26,15 @@ import Snackbar from "@material-ui/core/Snackbar";
 
 import firebase from "../../firebase/firebase";
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    textTransform: "capitalize",
-  },
-}));
-
 const Main = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const myEmail = useSelector(selectMyEmail);
   const db = firebase.firestore();
   const myRef = db.collection("users").doc(myEmail);
-  const isAddingFriend = useSelector(selectIsAddingFriend);
   const isSnackbarOpen = useSelector(selectIsSnackbarOpen);
   const snackbarMessage = useSelector(selectSnackbarMessage);
   const isChatOpen = useSelector(selectIsChatOpen);
-  const isActionable = useSelector(selectIsActionable);
+  const isAddingFriend = useSelector(selectIsAddingFriend);
 
   useEffect(() => {
     myRef
@@ -63,7 +51,7 @@ const Main = () => {
       .catch((error) => {
         console.log("Error getting document:", error);
       });
-  }, []);
+  });
 
   return (
     <div>
@@ -88,20 +76,6 @@ const Main = () => {
         }}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         message={snackbarMessage}
-        action={
-          isActionable ? (
-            <Button
-              onClick={() => {
-                dispatch(setCancelSend());
-              }}
-              className={classes.button}
-              color="inherit"
-              size="small"
-            >
-              Undo
-            </Button>
-          ) : null
-        }
       />
     </div>
   );
