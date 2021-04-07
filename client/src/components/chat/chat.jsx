@@ -12,7 +12,6 @@ import {
   selectOtherEmail,
   selectOtherLanguage,
   selectOtherName,
-  setScrollToLast,
 } from "../../slices/communicate";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -105,7 +104,6 @@ const Chat = () => {
     if (message.length > 0) {
       sendMessage();
       setMessage("");
-      dispatch(setScrollToLast());
     }
   };
 

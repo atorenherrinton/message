@@ -8,10 +8,10 @@ export const communicateSlice = createSlice({
     messages: [],
     isChatOpen: false,
     isAddingFriend: false,
+    messageSent: false,
     otherEmail: "",
     otherName: "",
     otherLanguage: "",
-    scrollToLast: false,
   },
   reducers: {
     resetMessages: (state) => {
@@ -35,9 +35,6 @@ export const communicateSlice = createSlice({
     setOtherLanguage: (state, action) => {
       state.otherLanguage = action.payload;
     },
-    setScrollToLast: (state) => {
-      state.scrollToLast = !state.scrollToLast;
-    },
   },
 });
 
@@ -46,10 +43,10 @@ export const {
   setMessages,
   setAddingFriend,
   setIsChatOpen,
+
   setOtherEmail,
   setOtherName,
   setOtherLanguage,
-  setScrollToLast
 } = communicateSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
@@ -61,6 +58,5 @@ export const selectOtherEmail = (state) => state.communicate.otherEmail;
 export const selectOtherName = (state) => state.communicate.otherName;
 export const selectOtherLanguage = (state) => state.communicate.otherLanguage;
 export const selectMessages = (state) => state.communicate.messages;
-export const selectScrollToLast = (state) => state.communicate.scrollToLast;
 
 export default communicateSlice.reducer;
