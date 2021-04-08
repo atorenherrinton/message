@@ -2,11 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
-import {
-
-  selectOtherEmail,
-
-} from "../../slices/communicate";
+import { selectOtherEmail } from "../../slices/communicate";
 import Message from "../message/message";
 
 import firebase from "../../firebase/firebase";
@@ -15,26 +11,27 @@ const Messages = () => {
   const myEmail = useSelector(selectMyEmail);
   const otherEmail = useSelector(selectOtherEmail);
   const [messages, setMessages] = useState([]);
+  const db = firebase.firestore();
 
-  const loadMessages = () => {
-    const db = firebase.firestore();
-    db.collection("users")
-      .doc(myEmail)
-      .collection("friends")
-      .doc(otherEmail)
-      .collection("conversation")
-      .onSnapshot((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          temp.push(doc.data());
-        });
-        setMessages(temp);
-      });
-  };
+
 
   useEffect(() => {
+    const loadMessages = () => {
+      db.collection("users")
+        .doc(myEmail)
+        .collection("friends")
+        .doc(otherEmail)
+        .collection("conversation")
+        .onSnapshot((querySnapshot) => {
+          const temp = [];
+          querySnapshot.forEach((doc) => {
+            temp.push(doc.data());
+          });
+          setMessages(temp);
+        });
+    };
     loadMessages();
-  });
+  }, [db,myEmail,otherEmail]);
 
   return (
     <div>

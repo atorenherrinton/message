@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMyEmail } from "../../slices/authenticate";
 import {
-  resetMessages,
-  setMessages,
   setAddingFriend,
   selectIsAddingFriend,
   setIsChatOpen,
@@ -51,54 +49,45 @@ const Contacts = () => {
   const myEmail = useSelector(selectMyEmail);
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const [friends, setFriends] = useState([]);
-
-  const loadMessages = (friend) => {
-    const db = firebase.firestore();
-    db.collection("users")
-      .doc(myEmail)
-      .collection("friends")
-      .doc(friend.email)
-      .collection("conversation")
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          const temp = [];
-          querySnapshot.forEach((doc) => {
-            temp.push(doc.data());
-          });
-          dispatch(setMessages(temp));
-        });
-      })
-      .catch((error) => {
-        console.log("Error getting documents: ", error);
-      });
-  };
-
-  const getFriends = () => {
-    const db = firebase.firestore();
-    db.collection("users")
-      .doc(myEmail)
-      .collection("friends")
-      .onSnapshot((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          temp.push(doc.data());
-        });
-        setFriends(temp);
-      });
-  };
+  const db = firebase.firestore();
 
   useEffect(() => {
+    const getLastMessage = (otherEmail) => {
+      db.collection("users")
+        .doc(myEmail)
+        .collection("friends")
+        .doc(otherEmail)
+        .collection("conversation")
+        .orderBy("name", "desc")
+        .limit(1)
+        .onSnapshot((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            return doc.data();
+          });
+        });
+    };
+
+    const getFriends = () => {
+      db.collection("users")
+        .doc(myEmail)
+        .collection("friends")
+        .onSnapshot((querySnapshot) => {
+          const temp = [];
+          querySnapshot.forEach((doc) => {
+            const lastMessage = getLastMessage(doc.data().email);
+            temp.push({ ...doc.data(), lastMessage: lastMessage });
+          });
+          setFriends(temp);
+        });
+    };
+
     getFriends();
-  });
+  }, [db, myEmail]);
 
   const handleOpenChat = (friend) => {
     if (isAddingFriend) {
       dispatch(setAddingFriend());
     }
-    dispatch(resetMessages());
-    loadMessages(friend);
     dispatch(setIsChatOpen(true));
     dispatch(setOtherEmail(friend.email));
     dispatch(setOtherName(friend.name));
@@ -119,7 +108,7 @@ const Contacts = () => {
               dispatch(setAddingFriend());
             }
           }}
-          color="secondary"
+          color="primary"
           className={classes.fab}
           variant="extended"
         >
@@ -143,8 +132,8 @@ const Contacts = () => {
                     primary={friend.name}
                     secondary={
                       <React.Fragment>
-                        {friend.conversation
-                          ? friend.conversation[friend.conversation.length - 1]
+                        {friend.lastMessage
+                          ? friend.lastMessage
                           : `Start your conversation with ${friend.name}`}
                       </React.Fragment>
                     }

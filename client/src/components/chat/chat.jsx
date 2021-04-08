@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { selectOpenDropdown, setOpenDropdown } from "../../slices/actions";
 import {
   selectMyEmail,
   selectMyLanguage,
@@ -19,15 +20,17 @@ import Avatar from "@material-ui/core/Avatar";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
+import DeleteConversation from "../dialog/delete-conversation";
+import Dropdown from "../dropdown/dropdown";
+import IconButton from "@material-ui/core/IconButton";
 import FormControl from "@material-ui/core/FormControl";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
 import Messages from "../messages/messages";
-import SendIcon from "@material-ui/icons/Send";
-import IconButton from "@material-ui/core/IconButton";
-import { red } from "@material-ui/core/colors";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
+import { red } from "@material-ui/core/colors";
+import SendIcon from "@material-ui/icons/Send";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: 350,
   },
+  popperButton: {
+    textTransform: "capitalize",
+  },
 }));
 
 const Chat = () => {
@@ -64,6 +70,10 @@ const Chat = () => {
   const otherEmail = useSelector(selectOtherEmail);
   const otherName = useSelector(selectOtherName);
   const otherLanguage = useSelector(selectOtherLanguage);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = useSelector(selectOpenDropdown);
+  const [placement, setPlacement] = useState();
 
   const [message, setMessage] = useState("");
 
@@ -99,6 +109,12 @@ const Chat = () => {
     setMessage(event.target.value);
   };
 
+  const handleClick = (newPlacement) => (event) => {
+    setAnchorEl(event.currentTarget);
+    dispatch(setOpenDropdown((prev) => placement !== newPlacement || !prev));
+    setPlacement(newPlacement);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (message.length > 0) {
@@ -113,12 +129,14 @@ const Chat = () => {
         <CardHeader
           avatar={<Avatar alt={otherName} className={classes.avatar} />}
           action={
-            <IconButton aria-label="settings">
+            <IconButton onClick={handleClick("right")} aria-label="settings">
               <MoreVertIcon />
             </IconButton>
           }
           title={otherName}
         />
+        <Dropdown anchorEl={anchorEl} open={open} placement={placement} />
+        <DeleteConversation otherName={otherName} />
         <CardContent>
           <Messages />
           <FormControl className={classes.input} variant="outlined">

@@ -284,7 +284,7 @@ const SignUp = () => {
                   onClick={handleSubmit}
                   className={classes.button}
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                 >
                   Sign up
                 </Button>

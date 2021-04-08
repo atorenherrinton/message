@@ -24,15 +24,15 @@ const App = () => {
   const theme = createMuiTheme({
     palette: {
       primary: {
-        light: "#42464D",
-        main: "#383C42",
-        dark: "#0B0A0A",
+        light: "#1F84FF",
+        main: "#006EF5",
+        dark: "#005CCC",
         contrastText: "#fff",
       },
       secondary: {
-        light: "#D7E9FF",
-        main: "#479AFF",
-        dark: "#0D7DD3",
+        light: "#FF476F",
+        main: "#FF2454",
+        dark: "#F50035",
         contrastText: "#fff",
       },
     },

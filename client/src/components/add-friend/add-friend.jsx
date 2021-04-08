@@ -157,7 +157,7 @@ const AddFriend = () => {
               className={classes.button}
               type="submit"
               variant="contained"
-              color="secondary"
+              color="primary"
             >
               Send Invite
             </Button>

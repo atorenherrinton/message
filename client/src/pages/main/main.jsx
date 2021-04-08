@@ -15,15 +15,16 @@ import {
   setIsSnackbarOpen,
   selectIsSnackbarOpen,
   selectSnackbarMessage,
+  selectIsLoading,
 } from "../../slices/feedback";
 import AddFriend from "../../components/add-friend/add-friend";
 import Chat from "../../components/chat/chat";
 import Contacts from "../../components/contacts/contacts";
+import FriendRequests from "../../components/friend-requests/friend-requests";
 import Grid from "@material-ui/core/Grid";
 import Header from "../../components/header/header";
-import FriendRequests from "../../components/friend-requests/friend-requests";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import Snackbar from "@material-ui/core/Snackbar";
-
 import firebase from "../../firebase/firebase";
 
 const Main = () => {
@@ -31,10 +32,11 @@ const Main = () => {
   const myEmail = useSelector(selectMyEmail);
   const db = firebase.firestore();
   const myRef = db.collection("users").doc(myEmail);
+  const isAddingFriend = useSelector(selectIsAddingFriend);
+  const isChatOpen = useSelector(selectIsChatOpen);
+  const isLoading = useSelector(selectIsLoading);
   const isSnackbarOpen = useSelector(selectIsSnackbarOpen);
   const snackbarMessage = useSelector(selectSnackbarMessage);
-  const isChatOpen = useSelector(selectIsChatOpen);
-  const isAddingFriend = useSelector(selectIsAddingFriend);
 
   useEffect(() => {
     myRef
@@ -56,6 +58,7 @@ const Main = () => {
   return (
     <div>
       <Header />
+      {isLoading ? <LinearProgress /> : null}
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12} md={3}>
           <Contacts />

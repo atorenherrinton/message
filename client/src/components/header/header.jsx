@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
+  appBar: {
+    background: "#383C42"
+  },
   img: {
     marginTop: "0.75rem",
   },
@@ -51,7 +54,7 @@ const Header = () => {
   };
   return (
     <div className={classes.root}>
-      <AppBar color="primary" position="static">
+      <AppBar className={classes.appBar} color="primary" position="static">
         <Toolbar>
           <Grid
             container

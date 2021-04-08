@@ -5,7 +5,6 @@ import { createSlice } from "@reduxjs/toolkit";
 export const communicateSlice = createSlice({
   name: "communicate",
   initialState: {
-    messages: [],
     isChatOpen: false,
     isAddingFriend: false,
     messageSent: false,
@@ -14,17 +13,11 @@ export const communicateSlice = createSlice({
     otherLanguage: "",
   },
   reducers: {
-    resetMessages: (state) => {
-      state.messages = [];
-    },
     setAddingFriend: (state) => {
       state.isAddingFriend = !state.isAddingFriend;
     },
     setIsChatOpen: (state, action) => {
       state.isChatOpen = action.payload;
-    },
-    setMessages: (state, action) => {
-      state.messages = action.payload;
     },
     setOtherEmail: (state, action) => {
       state.otherEmail = action.payload;
@@ -39,11 +32,8 @@ export const communicateSlice = createSlice({
 });
 
 export const {
-  resetMessages,
-  setMessages,
   setAddingFriend,
   setIsChatOpen,
-
   setOtherEmail,
   setOtherName,
   setOtherLanguage,
@@ -57,6 +47,5 @@ export const selectIsAddingFriend = (state) => state.communicate.isAddingFriend;
 export const selectOtherEmail = (state) => state.communicate.otherEmail;
 export const selectOtherName = (state) => state.communicate.otherName;
 export const selectOtherLanguage = (state) => state.communicate.otherLanguage;
-export const selectMessages = (state) => state.communicate.messages;
 
 export default communicateSlice.reducer;

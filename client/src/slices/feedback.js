@@ -5,10 +5,11 @@ import { createSlice } from "@reduxjs/toolkit";
 export const feedbackSlice = createSlice({
   name: "feedback",
   initialState: {
+    isloading: false,
+    isSnackbarOpen: false,
     serverError: "",
     validationError: "",
     snackbarMessage: "",
-    isSnackbarOpen: false,
   },
   reducers: {
     setIsActionable: (state) => {
@@ -16,6 +17,9 @@ export const feedbackSlice = createSlice({
     },
     setCancelSend: (state) => {
       state.cancelSend = !state.cancelSend;
+    },
+    setIsLoading: (state) => {
+      state.loading = !state.loading;
     },
     setServerError: (state, action) => {
       state.serverError = action.payload;
@@ -35,6 +39,7 @@ export const feedbackSlice = createSlice({
 export const {
   setIsActionable,
   setCancelSend,
+  setIsLoading,
   setServerError,
   setValidationError,
   setSnackbarMessage,
@@ -46,6 +51,7 @@ export const {
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 export const selectIsActionable = (state) => state.feedback.isActionable;
 export const selectCancelSend = (state) => state.feedback.cancelSend;
+export const selectIsLoading = (state) => state.feedback.isLoading;
 export const selectServerError = (state) => state.feedback.serverError;
 export const selectValidationError = (state) => state.feedback.validationError;
 export const selectIsSnackbarOpen = (state) => state.feedback.isSnackbarOpen;
