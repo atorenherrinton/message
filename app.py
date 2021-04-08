@@ -25,7 +25,7 @@ def accept_friend_request():
     my_doc = my_ref.get()
     other_doc = other_ref.get()
 
-    if my_doc.exists:
+    if my_doc.exists and other_doc.exists:
         my_name = my_doc.to_dict()['name']
         my_language = my_doc.to_dict()['language']
 
@@ -70,10 +70,18 @@ def delete_collection(coll_ref):
 
 def delete_conversation():
     my_email, other_email = request.json['my_email'], request.json['other_email']
-    my_conversation = db.collection(u'users').document(my_email).collection(
-        u'friends').document(other_email).collection(u'conversation')
+    my_ref = db.collection(u'users').document(my_email).collection(
+        u'friends').document(other_email)
+    my_conversation = my_ref.collection(u'conversation')
     deleted_conversation = delete_collection(my_conversation)
-    return 'messages: ' + deleted_conversation
+
+    my_doc = my_ref.get()
+
+    if my_doc.exists:
+        my_ref.update({
+            u'lastMessage': firestore.DELETE_FIELD
+        })
+        return 'messages: ' + deleted_conversation
 
 
 def delete_friend_request():
@@ -139,16 +147,32 @@ def send_message():
     date = {u'year': year, u'date': f'{month}, {day}',
             u'day_of_week': day_of_week, u'time': time}
 
-    my_messages = db.collection(u'users').document(my_email).collection(
+    my_ref = db.collection(u'users').document(my_email)
+    other_ref = db.collection(u'users').document(other_email)
+
+    my_messages = my_ref.collection(
         u'friends').document(other_email).collection(u'conversation')
-    other_messages = db.collection(u'users').document(other_email).collection(
+    other_messages = other_ref.collection(
         u'friends').document(my_email).collection(u'conversation')
 
     my_messages.document(full_date).set(
         {u'message': message, u'email': my_email, u'date': date, u'full_date': full_date})
     other_messages.document(full_date).set(
         {u'message': message, u'email': my_email, u'date': date, u'full_date': full_date})
-    return 'message was sent'
+
+    my_doc = my_ref.get()
+    other_doc = other_ref.get()
+
+    if my_doc.exists and other_doc.exists:
+        other_ref.collection(u'friends').document(my_email).update({
+            u'lastMessage': message,
+        })
+        my_ref.collection(u'friends').document(other_email).update({
+            u'lastMessage': message,
+        })
+        return 'message successfully sent'
+    else:
+        return 'internal error'
 
 
 firebase_actions = {

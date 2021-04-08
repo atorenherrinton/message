@@ -49,26 +49,9 @@ const Contacts = () => {
   const myEmail = useSelector(selectMyEmail);
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const [friends, setFriends] = useState([]);
-  const [lastMessage, setLastMessage] = useState("");
   const db = firebase.firestore();
 
   useEffect(() => {
-    const getLastMessage = (otherEmail) => {
-      db.collection("users")
-        .doc(myEmail)
-        .collection("friends")
-        .doc(otherEmail)
-        .collection("conversation")
-        .orderBy("full_date", "desc")
-        .limit(1)
-        .onSnapshot((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            setLastMessage(doc.data().message);
-            console.log(lastMessage);
-          });
-        });
-    };
-
     const getFriends = () => {
       db.collection("users")
         .doc(myEmail)
@@ -76,16 +59,14 @@ const Contacts = () => {
         .onSnapshot((querySnapshot) => {
           const temp = [];
           querySnapshot.forEach((doc) => {
-            getLastMessage(doc.data().email);
-            const friend = { ...doc.data(), lastMessage: lastMessage };
-            temp.push(friend);
-            console.log(friend);
+            temp.push(doc.data());
           });
           setFriends(temp);
         });
     };
+
     getFriends();
-  }, [db, lastMessage, myEmail]);
+  }, [db, myEmail]);
 
   const handleOpenChat = (friend) => {
     if (isAddingFriend) {
