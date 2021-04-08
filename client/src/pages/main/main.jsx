@@ -35,6 +35,7 @@ const Main = () => {
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const isChatOpen = useSelector(selectIsChatOpen);
   const isLoading = useSelector(selectIsLoading);
+  console.log("isloading:", isLoading);
   const isSnackbarOpen = useSelector(selectIsSnackbarOpen);
   const snackbarMessage = useSelector(selectSnackbarMessage);
 

@@ -65,7 +65,7 @@ def delete_collection(coll_ref):
         print(f'Deleting doc {doc.id} => {doc.to_dict()}')
         doc.reference.delete()
         deleted = deleted + 1
-    return {f'collection: {coll_ref} - {deleted} documents were deleted'}
+    return f'{deleted} documents were deleted'
 
 
 def delete_conversation():
@@ -73,7 +73,7 @@ def delete_conversation():
     my_conversation = db.collection(u'users').document(my_email).collection(
         u'friends').document(other_email).collection(u'conversation')
     deleted_conversation = delete_collection(my_conversation)
-    return deleted_conversation
+    return 'messages: ' + deleted_conversation
 
 
 def delete_friend_request():

@@ -86,7 +86,7 @@ const Chat = () => {
       other_email: otherEmail,
       other_name: otherName,
       other_language: otherLanguage,
-      message: message,
+      message: message.trim(),
     };
 
     fetch("/firebase", {

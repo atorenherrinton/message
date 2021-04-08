@@ -13,8 +13,6 @@ const Messages = () => {
   const [messages, setMessages] = useState([]);
   const db = firebase.firestore();
 
-
-
   useEffect(() => {
     const loadMessages = () => {
       db.collection("users")
@@ -31,7 +29,7 @@ const Messages = () => {
         });
     };
     loadMessages();
-  }, [db,myEmail,otherEmail]);
+  }, [db, myEmail, otherEmail]);
 
   return (
     <div>

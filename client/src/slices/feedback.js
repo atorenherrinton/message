@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const feedbackSlice = createSlice({
   name: "feedback",
   initialState: {
-    isloading: false,
+    isLoading: false,
     isSnackbarOpen: false,
     serverError: "",
     validationError: "",
@@ -19,7 +19,7 @@ export const feedbackSlice = createSlice({
       state.cancelSend = !state.cancelSend;
     },
     setIsLoading: (state) => {
-      state.loading = !state.loading;
+      state.isLoading = !state.isLoading;
     },
     setServerError: (state, action) => {
       state.serverError = action.payload;

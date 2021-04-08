@@ -49,6 +49,7 @@ const Contacts = () => {
   const myEmail = useSelector(selectMyEmail);
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const [friends, setFriends] = useState([]);
+  const [lastMessage, setLastMessage] = useState("");
   const db = firebase.firestore();
 
   useEffect(() => {
@@ -58,11 +59,12 @@ const Contacts = () => {
         .collection("friends")
         .doc(otherEmail)
         .collection("conversation")
-        .orderBy("name", "desc")
+        .orderBy("full_date", "desc")
         .limit(1)
         .onSnapshot((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            return doc.data();
+            setLastMessage(doc.data().message);
+            console.log(lastMessage);
           });
         });
     };
@@ -74,15 +76,16 @@ const Contacts = () => {
         .onSnapshot((querySnapshot) => {
           const temp = [];
           querySnapshot.forEach((doc) => {
-            const lastMessage = getLastMessage(doc.data().email);
-            temp.push({ ...doc.data(), lastMessage: lastMessage });
+            getLastMessage(doc.data().email);
+            const friend = { ...doc.data(), lastMessage: lastMessage };
+            temp.push(friend);
+            console.log(friend);
           });
           setFriends(temp);
         });
     };
-
     getFriends();
-  }, [db, myEmail]);
+  }, [db, lastMessage, myEmail]);
 
   const handleOpenChat = (friend) => {
     if (isAddingFriend) {
@@ -133,7 +136,9 @@ const Contacts = () => {
                     secondary={
                       <React.Fragment>
                         {friend.lastMessage
-                          ? friend.lastMessage
+                          ? friend.lastMessage.length > 43
+                            ? friend.lastMessage.slice(0, 40).trim() + "..."
+                            : friend.lastMessage
                           : `Start your conversation with ${friend.name}`}
                       </React.Fragment>
                     }
