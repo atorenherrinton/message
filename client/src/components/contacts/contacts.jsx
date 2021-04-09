@@ -117,8 +117,8 @@ const Contacts = () => {
                     secondary={
                       <React.Fragment>
                         {friend.lastMessage
-                          ? friend.lastMessage.length > 43
-                            ? friend.lastMessage.slice(0, 40).trim() + "..."
+                          ? friend.lastMessage.length > 41
+                            ? friend.lastMessage.slice(0, 38).trim() + "..."
                             : friend.lastMessage
                           : `Start your conversation with ${friend.name}`}
                       </React.Fragment>
