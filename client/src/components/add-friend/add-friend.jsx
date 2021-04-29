@@ -138,6 +138,9 @@ const AddFriend = () => {
             <TextField
               onChange={(event) => {
                 setOtherEmail(event.target.value);
+                if (validationError) {
+                  dispatch(setValidationError(""));
+                }
               }}
               error={validationError ? true : false}
               helperText={validationError}

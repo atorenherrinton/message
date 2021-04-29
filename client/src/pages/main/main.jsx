@@ -35,7 +35,6 @@ const Main = () => {
   const isAddingFriend = useSelector(selectIsAddingFriend);
   const isChatOpen = useSelector(selectIsChatOpen);
   const isLoading = useSelector(selectIsLoading);
-  console.log("isloading:", isLoading);
   const isSnackbarOpen = useSelector(selectIsSnackbarOpen);
   const snackbarMessage = useSelector(selectSnackbarMessage);
 
@@ -60,14 +59,14 @@ const Main = () => {
     <div>
       <Header />
       {isLoading ? <LinearProgress /> : null}
-      <Grid container direction="row" justify="space-between">
-        <Grid item xs={12} md={3}>
+      <Grid container direction="row" justify="center" spacing={1}>
+        <Grid item xs={12} sm={3} lg={4}>
           <Contacts />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={11} sm={6} lg={4}>
           {isAddingFriend ? <AddFriend /> : isChatOpen ? <Chat /> : null}
         </Grid>
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={11} sm={3} lg={4}>
           <FriendRequests />
         </Grid>
       </Grid>

@@ -16,7 +16,6 @@ import AddIcon from "@material-ui/icons/Add";
 import Avatar from "@material-ui/core/Avatar";
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
-import Hidden from "@material-ui/core/Hidden";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -99,7 +98,6 @@ const Contacts = () => {
           <AddIcon className={classes.extendedIcon} />
           Add Friend
         </Fab>
-        <Hidden only={["xs", "sm"]}>
           <List className={classes.list}>
             {friends.map((friend, idx) => {
               return (
@@ -128,7 +126,6 @@ const Contacts = () => {
               );
             })}
           </List>
-        </Hidden>
       </Grid>
     </div>
   );

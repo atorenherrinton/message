@@ -45,7 +45,10 @@ const Messages = () => {
 
   const getItemSize = (index) => {
     const lineLength = 63;
-    const messageLength = messages[index].message.length;
+    let messageLength = 1;
+    if (messages[index]) {
+      messageLength = messages[index].message.length;
+    }
     const baseHeight = 35;
     const additionalLine = 20;
     let division = Math.round(messageLength / lineLength);

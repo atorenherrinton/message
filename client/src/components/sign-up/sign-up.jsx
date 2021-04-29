@@ -99,23 +99,23 @@ const SignUp = () => {
 
   const languages = [
     {
-      value: "English",
+      value: "en",
       label: "English",
     },
     {
-      value: "Spanish",
+      value: "es",
       label: "Español",
     },
     {
-      value: "Italian",
+      value: "it",
       label: "Italiano",
     },
     {
-      value: "French",
+      value: "fr",
       label: "Français",
     },
     {
-      value: "German",
+      value: "de",
       label: "Deutsch",
     },
   ];
@@ -125,6 +125,7 @@ const SignUp = () => {
       .auth()
       .createUserWithEmailAndPassword(myEmail, password)
       .then((userCredential) => {
+        dispatch(setUser());
         const user = userCredential.user;
         localStorage.setItem("userInfo", JSON.stringify(user.email));
       })
@@ -160,7 +161,7 @@ const SignUp = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("add_user_to_database:", data.result);
-          dispatch(setUser());
+
         })
         .catch((error) => {
           dispatch(setServerError(error));
@@ -239,7 +240,11 @@ const SignUp = () => {
                 <TextField
                   onChange={(event) => {
                     dispatch(setMyEmail(event.target.value));
+                    if (validationError) {
+                      dispatch(setValidationError(""));
+                    }
                   }}
+                  autoComplete="email"
                   error={validationError ? true : false}
                   helperText={validationError}
                   className={classes.input}
@@ -256,6 +261,7 @@ const SignUp = () => {
                     onChange={(event) => {
                       dispatch(setPassword(event.target.value));
                     }}
+                    autoComplete="new-password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     endAdornment={
@@ -272,7 +278,6 @@ const SignUp = () => {
                       </InputAdornment>
                     }
                     labelWidth={70}
-                    autoComplete="new-password"
                   />
                   {serverError ? (
                     <Alert className={classes.alert} severity="warning">

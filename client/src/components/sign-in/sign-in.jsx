@@ -104,9 +104,9 @@ const SignUp = () => {
         .auth()
         .signInWithEmailAndPassword(myEmail, password)
         .then((userCredential) => {
+          dispatch(setUser());
           const user = userCredential.user;
           localStorage.setItem("userInfo", JSON.stringify(user.email));
-          dispatch(setUser());
         })
         .catch((error) => {
           dispatch(setServerError(error.message));
@@ -130,7 +130,11 @@ const SignUp = () => {
               <TextField
                 onChange={(event) => {
                   dispatch(setMyEmail(event.target.value));
+                  if (validationError) {
+                    dispatch(setValidationError(""));
+                  }
                 }}
+                autoComplete="email"
                 error={validationError ? true : false}
                 helperText={validationError}
                 className={classes.input}
@@ -147,6 +151,7 @@ const SignUp = () => {
                   onChange={(event) => {
                     dispatch(setPassword(event.target.value));
                   }}
+                  autoComplete="current-password"
                   type={showPassword ? "text" : "password"}
                   name="password"
                   endAdornment={

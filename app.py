@@ -150,29 +150,53 @@ def send_message():
     my_ref = db.collection(u'users').document(my_email)
     other_ref = db.collection(u'users').document(other_email)
 
+    my_doc = my_ref.get()
+    other_doc = other_ref.get()
+
     my_messages = my_ref.collection(
         u'friends').document(other_email).collection(u'conversation')
     other_messages = other_ref.collection(
         u'friends').document(my_email).collection(u'conversation')
 
-    my_messages.document(full_date).set(
-        {u'message': message, u'email': my_email, u'date': date, u'full_date': full_date})
-    other_messages.document(full_date).set(
-        {u'message': message, u'email': my_email, u'date': date, u'full_date': full_date})
-
-    my_doc = my_ref.get()
-    other_doc = other_ref.get()
-
     if my_doc.exists and other_doc.exists:
-        other_ref.collection(u'friends').document(my_email).update({
-            u'lastMessage': message,
-        })
+        other_language = other_doc.to_dict()[u'language']
+        translated_message = translate_text(
+            other_language, message)[u'translatedText']
+
         my_ref.collection(u'friends').document(other_email).update({
             u'lastMessage': message,
         })
+        other_ref.collection(u'friends').document(my_email).update({
+            u'lastMessage': translated_message,
+        })
+
+        my_messages.document(full_date).set(
+            {u'message': message, u'email': my_email, u'date': date, u'full_date': full_date})
+        other_messages.document(full_date).set(
+            {u'message': translated_message, u'email': my_email, u'date': date, u'full_date': full_date})
         return 'message successfully sent'
     else:
         return 'internal error'
+
+
+def translate_text(target, text):
+    """Translates text into the target language.
+
+    Target must be an ISO 639-1 language code.
+    See https://g.co/cloud/translate/v2/translate-reference#supported_languages
+    """
+    import six
+    from google.cloud import translate_v2 as translate
+
+    translate_client = translate.Client()
+
+    if isinstance(text, six.binary_type):
+        text = text.decode("utf-8")
+
+    # Text can also be a sequence of strings, in which case this method
+    # will return a sequence of results for each text.
+    result = translate_client.translate(text, target_language=target)
+    return result
 
 
 firebase_actions = {

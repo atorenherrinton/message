@@ -35,9 +35,8 @@ import SendIcon from "@material-ui/icons/Send";
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 300,
-    maxWidth: 600,
     height: "33%",
-    marginTop: "2rem",
+    marginTop: "1.5rem",
     marginBottom: "5rem",
   },
   avatar: {

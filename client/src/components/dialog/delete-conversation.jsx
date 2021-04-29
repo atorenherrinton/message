@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOpenDialog, selectOpenDialog } from "../../slices/actions";
 import { selectMyEmail } from "../../slices/authenticate";
 import { selectOtherEmail } from "../../slices/communicate";
-import { setIsLoading, selectIsLoading } from "../../slices/feedback";
+import { setIsLoading } from "../../slices/feedback";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
 const DeleteConversation = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
   const myEmail = useSelector(selectMyEmail);
   const otherEmail = useSelector(selectOtherEmail);
   const open = useSelector(selectOpenDialog);
@@ -68,7 +67,6 @@ const DeleteConversation = (props) => {
 
   const handleDelete = () => {
     dispatch(setIsLoading());
-    console.log("loading", isLoading);
     deleteConversation();
     dispatch(setOpenDialog());
   };

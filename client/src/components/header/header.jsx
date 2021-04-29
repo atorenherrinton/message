@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   appBar: {
-    background: "#383C42"
+    background: "#383C42",
   },
   img: {
     marginTop: "0.75rem",
@@ -43,8 +43,10 @@ const Header = () => {
       .signOut()
       .then(() => {
         // Sign-out successful.
-        dispatch(setUser());
+        window.location.reload(false)
         localStorage.clear();
+        dispatch(setUser());
+        
       })
       .catch((error) => {
         const errorMessage = error.message;
