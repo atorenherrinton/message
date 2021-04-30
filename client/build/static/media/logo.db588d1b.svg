@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 448 84" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g id="Artboard2" transform="matrix(6.37952,0,0,3.9791,-49.3677,59.0683)">
+        <rect x="7.738" y="-14.845" width="70.225" height="21.11" style="fill:none;"/>
+        <clipPath id="_clip1">
+            <rect x="7.738" y="-14.845" width="70.225" height="21.11"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <g transform="matrix(1.44783,0,0,2.32123,7.11572,0.143649)">
+                <g id="Artboard1">
+                    <g>
+                        <text x="0px" y="0px" style="font-family:'RobotoSlab-Regular', 'Roboto Slab';font-size:12px;fill:white;">message</text>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
