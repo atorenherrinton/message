@@ -88,7 +88,7 @@ const Chat = () => {
       message: message.trim(),
     };
 
-    fetch("/firebase", {
+    fetch("https://message4.herokuapp.com/firebase", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
