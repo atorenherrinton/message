@@ -151,7 +151,7 @@ const SignUp = () => {
         my_language: myLanguage,
       };
 
-      fetch("/firebase", {
+      fetch("https://message4.herokuapp.com/firebase", {
         method: "POST", // or 'PUT'
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +161,6 @@ const SignUp = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("add_user_to_database:", data.result);
-
         })
         .catch((error) => {
           dispatch(setServerError(error));
