@@ -12,7 +12,7 @@ app.debug = True
 
 # Use a service account
 cred = credentials.Certificate(
-    'sdk/message-fe49a-firebase-adminsdk-pmzac-d2e7ab4242.json')
+    'sdk/message-fe49a-firebase-adminsdk-pmzac-f9cf5dc281.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
