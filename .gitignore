@@ -9,7 +9,8 @@
 /coverage
 
 # production
-
+/client/build
+/sdk
 /venv
 
 # misc
