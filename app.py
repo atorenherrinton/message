@@ -204,8 +204,7 @@ def translate_text(target, text):
     h = html.parser
     result = translate_client.translate(
         text, target_language=target)
-
-    return     h.unescape(result)
+    return h.unescape(result)
 
 
 firebase_actions = {
