@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 300,
     height: "33%",
     marginTop: "1.5rem",
-    marginBottom: "5rem",
+    marginBottom: "1.5rem",
   },
   avatar: {
     backgroundColor: red[500],

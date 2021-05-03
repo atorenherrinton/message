@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "1.5rem",
     width: "100%",
-    maxWidth: "36ch",
   },
   extendedIcon: {
     marginRight: theme.spacing(1),

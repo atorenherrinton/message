@@ -59,14 +59,14 @@ const Main = () => {
     <div>
       <Header />
       {isLoading ? <LinearProgress /> : null}
-      <Grid container direction="row" justify="center" spacing={1}>
-        <Grid item xs={12} sm={3} lg={4}>
+      <Grid container direction="row" justify="space-between" spacing={2}>
+        <Grid item xs={12} sm={4} lg={3}>
           <Contacts />
         </Grid>
-        <Grid item xs={11} sm={6} lg={4}>
+        <Grid item xs={12} sm={8} lg={4}>
           {isAddingFriend ? <AddFriend /> : isChatOpen ? <Chat /> : null}
         </Grid>
-        <Grid item xs={11} sm={3} lg={4}>
+        <Grid item xs={12} sm={5} lg={3}>
           <FriendRequests />
         </Grid>
       </Grid>
