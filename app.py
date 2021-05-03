@@ -1,10 +1,12 @@
+from datetime import datetime
 from flask import Flask, request, send_from_directory
 import firebase_admin
 from firebase_admin import auth
 from firebase_admin import credentials
 from firebase_admin import firestore
 from google.cloud import translate_v2 as translate
-from datetime import datetime
+import html
+from html.parser import HTMLParser
 import os
 from pytz import timezone
 import pytz
@@ -199,8 +201,11 @@ def translate_text(target, text):
 
     # Text can also be a sequence of strings, in which case this method
     # will return a sequence of results for each text.
-    result = translate_client.translate(text, target_language=target, format ="text")
-    return result
+    h = html.parser
+    result = translate_client.translate(
+        text, target_language=target)
+
+    return     h.unescape(result)
 
 
 firebase_actions = {
