@@ -199,8 +199,7 @@ def translate_text(target, text):
 
     # Text can also be a sequence of strings, in which case this method
     # will return a sequence of results for each text.
-    result = translate_client.translate(text, target_language=target)
-    print(u"Translation: {}".format(result["translatedText"]))
+    result = translate_client.translate(text, target_language=target, format ="text")
     return result
 
 
