@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     marginTop: "0.5rem",
-    maxWidth: 450,
     backgroundColor: theme.palette.background.paper,
   },
   button: {
@@ -64,7 +63,7 @@ const FriendRequests = () => {
       other_email: friend.email,
     };
 
-    fetch("/firebase", {
+    fetch("https://message4.herokuapp.com/firebase", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +91,7 @@ const FriendRequests = () => {
       other_email: friend.email,
     };
 
-    fetch("/firebase", {
+    fetch("https://message4.herokuapp.com/firebase", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",

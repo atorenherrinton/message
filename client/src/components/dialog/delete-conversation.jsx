@@ -44,7 +44,7 @@ const DeleteConversation = (props) => {
       other_email: otherEmail,
     };
 
-    fetch("/firebase", {
+    fetch("https://message4.herokuapp.com/firebase", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
