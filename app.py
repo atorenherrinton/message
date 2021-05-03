@@ -3,12 +3,18 @@ import firebase_admin
 from firebase_admin import auth
 from firebase_admin import credentials
 from firebase_admin import firestore
+from google.cloud import translate_v2 as translate
 from datetime import datetime
+import os
 from pytz import timezone
 import pytz
+import six
 
 app = Flask(__name__, static_folder='client/build', static_url_path='')
 app.debug = True
+
+credential_path = "sdk/message-fe49a-36501c6d489f.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 # Use a service account
 cred = credentials.Certificate(
@@ -185,8 +191,6 @@ def translate_text(target, text):
     Target must be an ISO 639-1 language code.
     See https://g.co/cloud/translate/v2/translate-reference#supported_languages
     """
-    import six
-    from google.cloud import translate_v2 as translate
 
     translate_client = translate.Client()
 
