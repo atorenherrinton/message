@@ -167,7 +167,7 @@ def send_message():
     if my_doc.exists and other_doc.exists:
         other_language = other_doc.to_dict()[u'language']
         translated_message = translate_text(
-            other_language, message)[u'translatedText']
+            other_language, message)[u'translatedText'].decode("utf-8")
 
         my_ref.collection(u'friends').document(other_email).update({
             u'lastMessage': message,
